@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Dashboard - Flash Running Club</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header" style="background-color: #facc15; display: flex; align-items: center; padding: 15px;">
+                <div id="sidebarAvatar" style="width: 50px; height: 50px; border-radius: 50%; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; margin-right: 10px; font-size: 1.5rem; overflow: hidden; border: 2px solid black;"></div>
+                <div id="sidebarMemberName" style="color: #000; font-weight: bold; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;"></div>
+                <button class="sidebar-toggle" id="sidebarToggle" style="background: none; border: none; color: #000; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="member-dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="member-availability.html"><i class="fas fa-calendar-check"></i> Training Availability</a></li>
+                    <li><a href="member-current-training.html"><i class="fas fa-running"></i> Current Trainings</a></li>
+                    <li><a href="member-payments.html"><i class="fas fa-credit-card"></i> Payments</a></li>
+                    <li><a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a></li>
+                    <li><a href="photos.html"><i class="fas fa-images"></i> Photos</a></li>
+                    <li><a href="about-us.html"><i class="fas fa-info-circle"></i> About Us</a></li>
+                    <li><a href="member-profile.html"><i class="fas fa-user"></i> Profile</a></li>
+                    <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <div class="hamburger" id="hamburger">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <img src="3nwp2q1ufj.png" alt="Flash Running Club Logo" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: middle; animation: logo-flash 2s infinite;">
+                    <span style="font-size: 0.9rem; white-space: nowrap; font-weight: bold;">Flash Running Club</span>
+                </div>
+            </div>
+
+            <div class="content-header" style="display: flex; align-items: center; margin: 10px 0 20px; padding: 0 20px; gap: 20px;">
+                <div id="profilePicture" style="width: 80px; height: 80px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #666; overflow: hidden; position: relative; box-sizing: border-box; border-radius: 50%; border: 3px solid #facc15; box-shadow: 0 2px 5px rgba(0,0,0,0.2); flex-shrink: 0;"></div>
+                <div style="flex: 1; text-align: center;">
+                    <h2 style="margin-bottom: 8px; font-size: 1.2rem;">Welcome,</h2>
+                    <h3 id="memberName" style="margin-top: 0; font-size: 1.6rem; color: #333; font-weight: bold;">Member</h3>
+                </div>
+            </div>
+
+            <!-- Member Statistics -->
+            <div class="stats-container" style="margin-bottom: 15px;">
+                <!-- First row: Morning & Evening Sessions -->
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <div class="stat-card" style="flex: 1; width: calc(50% - 5px); background-color: white; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 10px; text-align: center;">
+                        <div class="stat-icon" style="font-size: 1.2rem; color: #000; margin-bottom: 5px;"><i class="fas fa-sun"></i></div>
+                        <div class="stat-value" id="morningSessionsCount" style="font-size: 1.4rem; font-weight: bold; color: #facc15; margin: 5px 0;">0</div>
+                        <div class="stat-label" style="color: #666; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Morning Sessions</div>
+                    </div>
+                    
+                    <div class="stat-card" style="flex: 1; width: calc(50% - 5px); background-color: white; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 10px; text-align: center;">
+                        <div class="stat-icon" style="font-size: 1.2rem; color: #000; margin-bottom: 5px;"><i class="fas fa-moon"></i></div>
+                        <div class="stat-value" id="eveningSessionsCount" style="font-size: 1.4rem; font-weight: bold; color: #facc15; margin: 5px 0;">0</div>
+                        <div class="stat-label" style="color: #666; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Evening Sessions</div>
+                    </div>
+                </div>
+                
+                <!-- Second row: Incomplete & Complete Trainings -->
+                <div style="display: flex; gap: 10px;">
+                    <div class="stat-card" style="flex: 1; width: calc(50% - 5px); background-color: white; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 10px; text-align: center;">
+                        <div class="stat-icon" style="font-size: 1.2rem; color: #000; margin-bottom: 5px;"><i class="fas fa-times-circle"></i></div>
+                        <div class="stat-value" id="incompleteTrainingsCount" style="font-size: 1.4rem; font-weight: bold; color: #facc15; margin: 5px 0;">0</div>
+                        <div class="stat-label" style="color: #666; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Incomplete Trainings</div>
+                    </div>
+                    
+                    <div class="stat-card" style="flex: 1; width: calc(50% - 5px); background-color: white; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 10px; text-align: center;">
+                        <div class="stat-icon" style="font-size: 1.2rem; color: #000; margin-bottom: 5px;"><i class="fas fa-check-circle"></i></div>
+                        <div class="stat-value" id="completedTrainingsCount" style="font-size: 1.4rem; font-weight: bold; color: #facc15; margin: 5px 0;">0</div>
+                        <div class="stat-label" style="color: #666; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Completed Trainings</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Running Times Section -->
+            <div class="stats-container" style="margin-bottom: 15px;">
+                <div class="card-header" style="margin-bottom: 10px;">
+                    <h3 class="card-title">My Running Times</h3>
+                </div>
+                
+                <!-- First row: 5km and 10km boxes -->
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;" id="runningTimes1stRow">
+                    <!-- These will be populated by JavaScript -->
+                </div>
+                
+                <!-- Second row: 21km and 42km boxes -->
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;" id="runningTimes2ndRow">
+                    <!-- These will be populated by JavaScript -->
+                </div>
+                
+                <!-- Third row: 1500m, 5000m, 10000m boxes -->
+                <div style="display: flex; gap: 10px;" id="runningTimes3rdRow">
+                    <!-- These will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/training.js"></script>
+    <script src="js/members.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Dashboard page loaded');
+            // Check if user is logged in as member
+            const userType = localStorage.getItem('userType');
+            const username = localStorage.getItem('username');
+            const sessionId = localStorage.getItem('currentSessionId');
+            
+            console.log('Auth check - Type:', userType, 'Username:', username, 'Session:', sessionId);
+            
+            if (userType !== 'member' || !username || !sessionId) {
+                console.log('Not properly authenticated, redirecting to login');
+                window.location.href = 'member-login.html';
+                return;
+            }
+
+            const username = localStorage.getItem('username');
+            
+            // Display user's name and avatar in the sidebar and header
+            displayMemberInfo(username);
+
+            // Load member statistics
+            loadMemberStats();
+            
+            // Setup real-time training updates
+            setupTrainingUpdates();
+
+            // Logout functionality
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                logout();
+            });
+        });
+
+        // Function to display member information in sidebar and header
+        function displayMemberInfo(username) {
+            try {
+                const members = getAllMembers();
+                const member = members.find(m => m.username === username);
+                
+                if (member) {
+                    // Update header with name
+                    let displayName = username;
+                    if (member.fullName) {
+                        displayName = member.fullName;
+                    }
+                    document.getElementById('memberName').textContent = displayName;
+                    document.getElementById('sidebarMemberName').textContent = displayName;
+                    
+                    // Set avatar image or initials in the sidebar
+                    const sidebarAvatar = document.getElementById('sidebarAvatar');
+                    const profilePicture = document.getElementById('profilePicture');
+                    
+                    if (member.profilePhoto) {
+                        // Set profile photo in sidebar
+                        sidebarAvatar.innerHTML = `<img src="${member.profilePhoto}" alt="${username}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                        
+                        // Set profile photo in dashboard header
+                        profilePicture.innerHTML = `<img src="${member.profilePhoto}" alt="${username}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; box-sizing: border-box;">`;
+                    } else {
+                        // Set initials for avatar in sidebar
+                        const initial = member.fullName ? member.fullName.charAt(0).toUpperCase() : username.charAt(0).toUpperCase();
+                        sidebarAvatar.innerHTML = initial;
+                        
+                        // Set initials for avatar in dashboard header
+                        profilePicture.innerHTML = `<div style="width: 140px; height: 140px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">${initial}</div>`;
+                    }
+                }
+            } catch (error) {
+                console.error('Error displaying member info:', error);
+            }
+        }
+        
+        // Setup real-time training updates
+        function setupTrainingUpdates() {
+            // Store the current timestamp when the page loads
+            let lastCheckedTimestamp = getTrainingUpdateTimestamp();
+            
+            // Check for updates every 5 seconds
+            setInterval(() => {
+                if (checkForTrainingUpdates(lastCheckedTimestamp)) {
+                    // Update the last checked timestamp
+                    lastCheckedTimestamp = getTrainingUpdateTimestamp();
+                    
+                    // Reload trainings if there's an update
+                    loadMemberTrainings();
+                    console.log('Training data updated from admin');
+                }
+            }, 5000); // Check every 5 seconds
+        }
+
+        function loadMemberStats() {
+            const username = localStorage.getItem('username');
+            const trainings = getMemberTrainings(username);
+            
+            // Update statistics display
+            updateMemberStats(username, trainings);
+            
+            // Load running times
+            loadDashboardRunningTimes(username);
+        }
+        
+        // Function to load running times on dashboard
+        function loadDashboardRunningTimes(username) {
+            // Get member data from storage
+            const members = getAllMembers();
+            const member = members.find(m => m.username === username);
+            
+            if (!member) {
+                return;
+            }
+            
+            // Initialize running times if not exist
+            if (!member.runningTimes) {
+                member.runningTimes = {
+                    '1.5mile': { time: '', date: '' },
+                    '2miles': { time: '', date: '' },
+                    '5km': { time: '', date: '' },
+                    '10km': { time: '', date: '' },
+                    '21km': { time: '', date: '' },
+                    '42km': { time: '', date: '' },
+                    '1500m': { time: '', date: '' },
+                    '5000m': { time: '', date: '' },
+                    '10000m': { time: '', date: '' }
+                };
+                // Save to localStorage
+                localStorage.setItem('memberDb', JSON.stringify(members));
+            }
+            
+            const firstRow = document.getElementById('runningTimes1stRow');
+            const secondRow = document.getElementById('runningTimes2ndRow');
+            const thirdRow = document.getElementById('runningTimes3rdRow');
+            
+            if (!firstRow || !secondRow || !thirdRow) return;
+            
+            firstRow.innerHTML = '';
+            secondRow.innerHTML = '';
+            thirdRow.innerHTML = '';
+            
+            // Create boxes for each distance
+            // First row: 1.5mile, 2miles, and 5km
+            createTimeBox(firstRow, '1.5mile', member.runningTimes['1.5mile']);
+            createTimeBox(firstRow, '2miles', member.runningTimes['2miles']);
+            createTimeBox(firstRow, '5km', member.runningTimes['5km']);
+            
+            // Second row: 10km, 21km, and 42km
+            createTimeBox(secondRow, '10km', member.runningTimes['10km']);
+            createTimeBox(secondRow, '21km', member.runningTimes['21km']);
+            createTimeBox(secondRow, '42km', member.runningTimes['42km']);
+            
+            // Third row: 1500m, 5000m, and 10000m
+            createTimeBox(thirdRow, '1500m', member.runningTimes['1500m']);
+            createTimeBox(thirdRow, '5000m', member.runningTimes['5000m']);
+            createTimeBox(thirdRow, '10000m', member.runningTimes['10000m']);
+        }
+        
+        // Helper function to create a time box
+        function createTimeBox(container, distance, timeData) {
+            const box = document.createElement('div');
+            box.className = 'stat-card';
+            box.style.flex = '1';
+            box.style.backgroundColor = 'white';
+            box.style.borderRadius = '5px';
+            box.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)';
+            box.style.padding = '15px';
+            box.style.textAlign = 'center';
+            box.style.cursor = 'pointer';
+            
+            // All icons are running icons
+            let icon = 'fa-running';
+            
+            const time = timeData && timeData.time ? timeData.time : 'Not set';
+            
+            box.innerHTML = `
+                <div style="font-size: 0.9rem; color: #000; margin-bottom: 5px;"><i class="fas ${icon}"></i></div>
+                <div style="font-size: 0.8rem; font-weight: bold; color: #000; margin-bottom: 5px;">${distance}</div>
+                <div style="font-size: 1rem; font-weight: bold; color: #facc15; margin: 5px 0;">${time}</div>
+            `;
+            
+            // Add click event to ask before generating and downloading image
+            box.addEventListener('click', function() {
+                if (time !== 'Not set') {
+                    const confirmDownload = confirm(`Do you want to download your ${distance} time achievement?`);
+                    if (confirmDownload) {
+                        generateRunningTimeImage(distance, time);
+                    }
+                } else {
+                    alert('No time recorded for this distance yet.');
+                }
+            });
+            
+            container.appendChild(box);
+        }
+        
+        // Function to generate and download an image of the running time
+        function generateRunningTimeImage(distance, time) {
+            // Get member name and photo
+            const username = localStorage.getItem('username');
+            const members = getAllMembers();
+            const member = members.find(m => m.username === username);
+            const displayName = member?.fullName || username || 'Runner';
+            const profilePhoto = member?.profilePhoto || null;
+            
+            // Create a canvas element
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas dimensions to 1080x1080 (square format for social media)
+            canvas.width = 1080;
+            canvas.height = 1080;
+            
+            // Set background
+            ctx.fillStyle = '#f5f5f5';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Add yellow header
+            ctx.fillStyle = '#facc15';
+            ctx.fillRect(0, 0, canvas.width, 180);
+            
+            // Helper function to center text
+            function drawCenteredText(text, y, fontSize, fontWeight = 'normal', color = '#000') {
+                ctx.font = `${fontWeight} ${fontSize}px Arial`;
+                ctx.fillStyle = color;
+                const textWidth = ctx.measureText(text).width;
+                const x = (canvas.width - textWidth) / 2;
+                ctx.fillText(text, x, y);
+            }
+            
+            // Function to continue after logo is loaded
+            function continueWithLogo() {
+                // Draw profile photo in center if available with more spacing
+                if (profilePhoto) {
+                    const profileImg = new Image();
+                    profileImg.onload = function() {
+                        // Create circular profile photo in center, moved down to give more space
+                        const centerX = canvas.width / 2;
+                        const centerY = 400; // Moved down more for better spacing
+                        const radius = 150; // Larger profile photo
+                        
+                        ctx.save();
+                        ctx.beginPath();
+                        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2, true);
+                        ctx.closePath();
+                        ctx.clip();
+                        
+                        ctx.drawImage(profileImg, centerX - radius, centerY - radius, radius * 2, radius * 2);
+                        ctx.restore();
+                        
+                        // Draw gold border around profile
+                        ctx.strokeStyle = '#facc15';
+                        ctx.lineWidth = 5;
+                        ctx.beginPath();
+                        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                        ctx.stroke();
+                        
+                        // Continue with the rest of the image
+                        completeImage();
+                    };
+                    profileImg.onerror = function() {
+                        // If profile image fails to load, continue without it
+                        completeImage();
+                    };
+                    profileImg.src = profilePhoto;
+                } else {
+                    // No profile photo, just continue
+                    completeImage();
+                }
+            }
+            
+            function completeImage() {
+                // Add member name with more spacing after profile photo
+                drawCenteredText(`Runner: ${displayName}`, 630, 36, 'bold', '#333');
+                
+                // Add achievement text with more spacing
+                drawCenteredText('Personal Best', 700, 42, 'bold', '#333');
+                
+                // Add distance with more spacing
+                drawCenteredText(distance, 800, 80, 'bold', '#333');
+                
+                // Add time in smaller font with more spacing
+                drawCenteredText(time, 900, 100, 'bold', '#facc15');
+                
+                // Add date with spacing
+                const today = new Date();
+                const dateStr = today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                drawCenteredText(`Recorded on ${dateStr}`, 980, 26, 'normal', '#666');
+                
+                // Add signature at bottom with spacing
+                drawCenteredText('Powered by Flash Running Club App', 1040, 24, 'normal', '#999');
+                
+                // Convert canvas to image and trigger download
+                const dataURL = canvas.toDataURL('image/png');
+                const a = document.createElement('a');
+                a.href = dataURL;
+                a.download = `flash-running-club-${displayName}-${distance}-${time.replace(/:/g, '-')}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+            
+            // Create temporary img element to load logo
+            const logoImg = new Image();
+            logoImg.onload = function() {
+                // Center logo and club name on the same line
+                const logoWidth = 100;
+                const logoHeight = 100;
+                
+                // Measure text width to calculate total width
+                ctx.font = 'bold 48px Arial';
+                const textWidth = ctx.measureText('Flash Running Club').width;
+                const gap = 30;
+                const totalWidth = logoWidth + gap + textWidth;
+                
+                // Center the entire group
+                const centerX = canvas.width / 2;
+                const logoX = centerX - (totalWidth / 2);
+                const logoY = 40;
+                
+                // Draw logo
+                ctx.drawImage(logoImg, logoX, logoY, logoWidth, logoHeight);
+                
+                // Add club name on the same line as logo in black color
+                ctx.fillStyle = '#000';
+                ctx.font = 'bold 48px Arial';
+                ctx.fillText('Flash Running Club', logoX + logoWidth + gap, logoY + 75);
+                
+                // Continue with profile photo and rest of image
+                continueWithLogo();
+            };
+            
+            // Handle logo loading error
+            logoImg.onerror = function() {
+                console.error('Could not load club logo');
+                // Add club name without logo centered
+                ctx.fillStyle = '#000';
+                ctx.font = 'bold 48px Arial';
+                const textWidth = ctx.measureText('Flash Running Club').width;
+                const x = (canvas.width - textWidth) / 2;
+                ctx.fillText('Flash Running Club', x, 100);
+                continueWithLogo();
+            };
+            
+            // Set source for new logo image
+            logoImg.src = "hfoi8gmj1y.png";
+        }
+    
+        // Function to calculate and update member stats
+        function updateMemberStats(username, trainings) {
+            // Calculate stats from all trainings (current and past for statistics)
+            // Note: We need to get past trainings for admin view to calculate accurate stats
+            const allTrainings = getAllTrainingsForStats(username);
+            
+            // Morning & Evening Sessions (total assigned)
+            let totalMorningSessions = 0;
+            let totalEveningSessions = 0;
+            
+            // Count from current trainings
+            allTrainings.current.forEach(training => {
+                if (training.morningSession) totalMorningSessions++;
+                if (training.eveningSession) totalEveningSessions++;
+            });
+            
+            // Count from past trainings
+            allTrainings.past.forEach(training => {
+                if (training.morningSession) totalMorningSessions++;
+                if (training.eveningSession) totalEveningSessions++;
+            });
+            
+            // Count completed sessions
+            let completedMorning = 0;
+            let completedEvening = 0;
+            
+            // From current trainings
+            allTrainings.current.forEach(training => {
+                if (training.morningSession && training.morningSession.completed) {
+                    completedMorning++;
+                }
+                if (training.eveningSession && training.eveningSession.completed) {
+                    completedEvening++;
+                }
+            });
+            
+            // From past trainings
+            allTrainings.past.forEach(training => {
+                if (training.morningSession && training.morningSession.completed) {
+                    completedMorning++;
+                }
+                if (training.eveningSession && training.eveningSession.completed) {
+                    completedEvening++;
+                }
+            });
+            
+            // Calculate incomplete sessions
+            let incompleteMorning = 0;
+            let incompleteEvening = 0;
+            
+            // From current trainings
+            allTrainings.current.forEach(training => {
+                if (training.morningSession && !training.morningSession.completed) {
+                    incompleteMorning++;
+                }
+                if (training.eveningSession && !training.eveningSession.completed) {
+                    incompleteEvening++;
+                }
+            });
+            
+            // From past trainings
+            allTrainings.past.forEach(training => {
+                if (training.morningSession && !training.morningSession.completed) {
+                    incompleteMorning++;
+                }
+                if (training.eveningSession && !training.eveningSession.completed) {
+                    incompleteEvening++;
+                }
+            });
+            
+            // Update stats in UI
+            document.getElementById('morningSessionsCount').textContent = totalMorningSessions;
+            document.getElementById('eveningSessionsCount').textContent = totalEveningSessions;
+            document.getElementById('incompleteTrainingsCount').textContent = incompleteMorning + incompleteEvening;
+            document.getElementById('completedTrainingsCount').textContent = completedMorning + completedEvening;
+        }
+        
+        // Function to get all trainings for statistics (including past for accurate counts)
+        function getAllTrainingsForStats(username) {
+            try {
+                const trainings = JSON.parse(localStorage.getItem('trainings')) || {};
+                
+                if (!trainings[username]) {
+                    return { current: [], past: [] };
+                }
+                
+                return trainings[username];
+            } catch (error) {
+                console.error('Error getting all trainings for stats:', error);
+                return { current: [], past: [] };
+            }
+        }
+    </script>
+</body>
+</html>

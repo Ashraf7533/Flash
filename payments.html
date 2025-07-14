@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payments - Flash Running Club</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Payment page specific styles */
+        .member-list {
+            margin-bottom: 20px;
+        }
+        
+        .member-list-item {
+            padding: 10px;
+            margin-bottom: 5px;
+            background-color: #f8f8f8;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .member-list-item:hover, .member-list-item.active {
+            background-color: #facc15;
+            color: #000;
+        }
+        
+        .payment-filters {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .payment-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .payment-table th {
+            background-color: #f0f0f0;
+            padding: 10px;
+            text-align: left;
+        }
+        
+        .payment-table td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .payment-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .payment-form {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .payment-form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header" style="background-color: #facc15; display: flex; align-items: center; padding: 15px;">
+                <div class="sidebar-logo" style="display: flex; align-items: center; flex: 1;">
+                    <img src="3nwp2q1ufj.png" alt="Flash Running Club Logo" style="width: 30px; height: 30px; margin-right: 10px; vertical-align: middle; animation: logo-flash 2s infinite; border-radius: 50%;">
+                    <span style="font-weight: bold; font-size: 1rem; color: #000;">Admin Panel</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle" style="background: none; border: none; color: #000; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="admin-dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="members.html"><i class="fas fa-users"></i> All Members</a></li>
+                    <li><a href="add-member.html"><i class="fas fa-user-plus"></i> Add Member</a></li>
+                    <li><a href="training.html"><i class="fas fa-running"></i> Trainings</a></li>
+                    <li><a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a></li>
+                    <li><a href="payments.html" class="active"><i class="fas fa-credit-card"></i> Payments</a></li>
+                    <li><a href="photos.html"><i class="fas fa-images"></i> Photos</a></li>
+                    <li><a href="about-us.html"><i class="fas fa-info-circle"></i> About Us</a></li>
+                    <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <div class="hamburger" id="hamburger">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div>
+                    <img src="3nwp2q1ufj.png" alt="Flash Running Club Logo" style="width: 24px; height: 24px; margin-right: 5px; vertical-align: middle; animation: logo-flash 2s infinite;">
+                    <span style="font-size: 0.8rem; white-space: nowrap; font-weight: bold;">Flash Running Club</span>
+                </div>
+            </div>
+
+            <div class="content-header">
+                <h2>Member Payments</h2>
+                <p>Manage monthly payments for all club members</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 class="card-title">Member Payments</h3>
+                        <div style="min-width: 200px; position: relative;">
+                            <label for="memberSelect" style="margin-right: 10px; display: block; margin-bottom: 5px;">Select Member:</label>
+                            <select id="memberSelect" class="form-control" style="width: 100%;">
+                                <option value="">-- Select Member --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-body" id="paymentSection" style="display: none;">
+                <div class="card-body">
+                    <!-- Add New Payment Form -->
+                    <div class="payment-form" id="paymentForm">
+                        <h4 style="margin-bottom: 15px;">Add New Payment</h4>
+                        <!-- First row: Year and Month -->
+                        <div class="payment-form-row">
+                            <div class="form-group" style="min-width: 120px;">
+                                <label for="paymentYear">Year</label>
+                                <select id="paymentYear" class="form-control" style="width: 100%;">
+                                    <option value="2025">2025</option>
+                                    <option value="2026">2026</option>
+                                    <option value="2027">2027</option>
+                                    <option value="2028">2028</option>
+                                    <option value="2029">2029</option>
+                                    <option value="2030">2030</option>
+                                    <option value="2031">2031</option>
+                                    <option value="2032">2032</option>
+                                    <option value="2033">2033</option>
+                                    <option value="2034">2034</option>
+                                    <option value="2035">2035</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="min-width: 150px;">
+                                <label for="paymentMonth">Month</label>
+                                <select id="paymentMonth" class="form-control" style="width: 100%;">
+                                    <option value="1">January</option>
+                                    <option value="2">February</option>
+                                    <option value="3">March</option>
+                                    <option value="4">April</option>
+                                    <option value="5">May</option>
+                                    <option value="6">June</option>
+                                    <option value="7">July</option>
+                                    <option value="8">August</option>
+                                    <option value="9">September</option>
+                                    <option value="10">October</option>
+                                    <option value="11">November</option>
+                                    <option value="12">December</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Second row: Amount and Payment Date -->
+                        <div class="payment-form-row">
+                            <div class="form-group" style="min-width: 120px;">
+                                <label for="paymentAmount">Amount</label>
+                                <input type="number" id="paymentAmount" class="form-control" placeholder="0.00" step="0.01" style="width: 100%;">
+                            </div>
+                            <div class="form-group" style="min-width: 150px;">
+                                <label for="paymentDate">Payment Date</label>
+                                <input type="date" id="paymentDate" class="form-control" style="width: 100%;">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="paymentNotes">Notes</label>
+                            <textarea id="paymentNotes" class="form-control" rows="2" placeholder="Optional notes about this payment"></textarea>
+                        </div>
+                        <div class="payment-form-row" style="justify-content: center;">
+                            <button id="addPaymentBtn" class="btn btn-primary">Add Payment</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Filters -->
+                    <div class="payment-filters">
+                        <div class="form-group" style="min-width: 150px;">
+                            <label for="filterYear">Filter by Year</label>
+                            <select id="filterYear" class="form-control" style="width: 100%;">
+                                <option value="all">All Years</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Payments Table -->
+                    <div class="table-responsive">
+                        <table class="payment-table">
+                            <thead>
+                                <tr>
+                                    <th>Year</th>
+                                    <th>Month</th>
+                                    <th>Amount</th>
+                                    <th>Payment Date</th>
+                                    <th>Notes</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paymentsTableBody">
+                                <tr>
+                                    <td colspan="6" class="text-center">Select a member to view their payment history</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Edit Payment Modal -->
+            <div class="modal-overlay" id="editPaymentModal">
+                <div class="modal">
+                    <div class="close-modal" id="closeEditModal">&times;</div>
+                    <h3>Edit Payment</h3>
+                    <!-- First row: Year and Month -->
+                    <div class="payment-form-row">
+                        <div class="form-group" style="min-width: 120px;">
+                            <label for="editPaymentYear">Year</label>
+                            <select id="editPaymentYear" class="form-control" style="width: 100%;">
+                                <option value="2025">2025</option>
+                                <option value="2026">2026</option>
+                                <option value="2027">2027</option>
+                                <option value="2028">2028</option>
+                                <option value="2029">2029</option>
+                                <option value="2030">2030</option>
+                                <option value="2031">2031</option>
+                                <option value="2032">2032</option>
+                                <option value="2033">2033</option>
+                                <option value="2034">2034</option>
+                                <option value="2035">2035</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="min-width: 150px;">
+                            <label for="editPaymentMonth">Month</label>
+                            <select id="editPaymentMonth" class="form-control" style="width: 100%;">
+                                <option value="1">January</option>
+                                <option value="2">February</option>
+                                <option value="3">March</option>
+                                <option value="4">April</option>
+                                <option value="5">May</option>
+                                <option value="6">June</option>
+                                <option value="7">July</option>
+                                <option value="8">August</option>
+                                <option value="9">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Second row: Amount and Payment Date -->
+                    <div class="payment-form-row">
+                        <div class="form-group" style="min-width: 120px;">
+                            <label for="editPaymentAmount">Amount</label>
+                            <input type="number" id="editPaymentAmount" class="form-control" placeholder="0.00" step="0.01" style="width: 100%;">
+                        </div>
+                        <div class="form-group" style="min-width: 150px;">
+                            <label for="editPaymentDate">Payment Date</label>
+                            <input type="date" id="editPaymentDate" class="form-control" style="width: 100%;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPaymentNotes">Notes</label>
+                        <textarea id="editPaymentNotes" class="form-control" rows="2" placeholder="Optional notes about this payment"></textarea>
+                    </div>
+                    <div style="text-align: right; margin-top: 20px;">
+                        <button class="btn btn-secondary" id="cancelEditBtn" style="margin-right: 10px;">Cancel</button>
+                        <button class="btn btn-primary" id="saveEditBtn">Save Changes</button>
+                    </div>
+                    <input type="hidden" id="editPaymentId">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/payments.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in as admin
+            if (localStorage.getItem('userType') !== 'admin' || localStorage.getItem('username') !== 'FlashRC12') {
+                window.location.href = 'admin-login.html';
+                return;
+            }
+
+            // Set today's date as default for new payments
+            document.getElementById('paymentDate').valueAsDate = new Date();
+
+            // Initialize edit modal
+            const editModal = document.getElementById('editPaymentModal');
+            
+            document.getElementById('closeEditModal').addEventListener('click', function() {
+                editModal.style.display = 'none';
+            });
+            
+            document.getElementById('cancelEditBtn').addEventListener('click', function() {
+                editModal.style.display = 'none';
+            });
+            
+            // Logout functionality
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                logout();
+            });
+
+            // Load all members
+            loadMembers();
+            
+            // Add payment button click handler
+            document.getElementById('addPaymentBtn').addEventListener('click', function() {
+                addNewPayment();
+            });
+            
+            // Save edit button click handler
+            document.getElementById('saveEditBtn').addEventListener('click', function() {
+                savePaymentEdit();
+            });
+            
+            // Filter year change handler
+            document.getElementById('filterYear').addEventListener('change', function() {
+                const memberSelect = document.getElementById('memberSelect');
+                if (memberSelect.value) {
+                    loadMemberPayments(memberSelect.value);
+                }
+            });
+        });
+        
+        function loadMembers() {
+            const memberSelect = document.getElementById('memberSelect');
+            
+            // Get members from localStorage
+            const members = getAllMembers();
+            
+            if (members.length === 0) {
+                // Add a disabled option indicating no members found
+                const option = document.createElement('option');
+                option.textContent = 'No members found';
+                option.disabled = true;
+                memberSelect.appendChild(option);
+                return;
+            }
+            
+            // Clear existing options except the first one
+            while (memberSelect.options.length > 1) {
+                memberSelect.remove(1);
+            }
+            
+            // Sort members alphabetically
+            members.sort((a, b) => a.username.localeCompare(b.username));
+            
+            // Create member options
+            members.forEach(member => {
+                const option = document.createElement('option');
+                option.value = member.username;
+                option.textContent = member.username;
+                memberSelect.appendChild(option);
+            });
+            
+            // Add change event listener
+            memberSelect.addEventListener('change', function() {
+                const selectedUsername = this.value;
+                
+                if (selectedUsername) {
+                    // Show payment section
+                    document.getElementById('paymentSection').style.display = 'block';
+                    
+                    // Load member payments
+                    loadMemberPayments(selectedUsername);
+                } else {
+                    // Hide payment section if no member is selected
+                    document.getElementById('paymentSection').style.display = 'none';
+                }
+            });
+        }
+        
+        function loadMemberPayments(username) {
+            const paymentsTableBody = document.getElementById('paymentsTableBody');
+            const filterYear = document.getElementById('filterYear').value;
+            
+            // Get member payments
+            const payments = getMemberPayments(username);
+            
+            if (payments.length === 0) {
+                paymentsTableBody.innerHTML = '<tr><td colspan="6" class="text-center">No payment records found for this member</td></tr>';
+                return;
+            }
+            
+            // Update years filter options
+            updateYearFilterOptions();
+            
+            // Filter payments by year if needed
+            const filteredPayments = filterYear === 'all' 
+                ? payments 
+                : payments.filter(payment => payment.year === parseInt(filterYear));
+            
+            if (filteredPayments.length === 0) {
+                paymentsTableBody.innerHTML = '<tr><td colspan="6" class="text-center">No payments found for the selected year</td></tr>';
+                return;
+            }
+            
+            paymentsTableBody.innerHTML = '';
+            
+            // Display payments
+            filteredPayments.forEach(payment => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${payment.year}</td>
+                    <td>${getMonthName(payment.month)}</td>
+                    <td>MVR ${payment.amount.toFixed(2)}</td>
+                    <td>${payment.paymentDate}</td>
+                    <td>${payment.notes}</td>
+                    <td class="payment-actions">
+                        <button class="btn btn-sm btn-primary edit-payment-btn" data-id="${payment.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-secondary delete-payment-btn" data-id="${payment.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                
+                paymentsTableBody.appendChild(row);
+            });
+            
+            // Add event listeners for edit and delete buttons
+            document.querySelectorAll('.edit-payment-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const paymentId = this.getAttribute('data-id');
+                    openEditModal(username, parseInt(paymentId));
+                });
+            });
+            
+            document.querySelectorAll('.delete-payment-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const paymentId = this.getAttribute('data-id');
+                    if (confirm('Are you sure you want to delete this payment record?')) {
+                        deletePaymentRecord(username, parseInt(paymentId));
+                    }
+                });
+            });
+        }
+        
+        function updateYearFilterOptions() {
+            const yearSelect = document.getElementById('filterYear');
+            
+            // Save current selection
+            const currentSelection = yearSelect.value;
+            
+            // Get all years with payments
+            const years = getPaymentYears();
+            
+            // Clear options except "All Years"
+            while (yearSelect.options.length > 1) {
+                yearSelect.remove(1);
+            }
+            
+            // Add year options
+            years.forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            });
+            
+            // Restore selection if possible
+            if (currentSelection !== 'all' && years.includes(parseInt(currentSelection))) {
+                yearSelect.value = currentSelection;
+            }
+        }
+        
+        function addNewPayment() {
+            const memberSelect = document.getElementById('memberSelect');
+            
+            if (!memberSelect.value) {
+                alert('Please select a member first');
+                return;
+            }
+            
+            const username = memberSelect.value;
+            const year = document.getElementById('paymentYear').value;
+            const month = document.getElementById('paymentMonth').value;
+            const amount = document.getElementById('paymentAmount').value;
+            const paymentDate = document.getElementById('paymentDate').value;
+            const notes = document.getElementById('paymentNotes').value;
+            
+            // Validate required fields
+            if (!year || !month || !amount || !paymentDate) {
+                alert('Please fill in all required fields: Year, Month, Amount, and Payment Date');
+                return;
+            }
+            
+            // Add payment
+            const result = addPayment(username, year, month, amount, paymentDate, notes);
+            
+            if (result.success) {
+                // Reset form
+                document.getElementById('paymentNotes').value = '';
+                document.getElementById('paymentDate').valueAsDate = new Date();
+                
+                // Show success message
+                alert('Payment added successfully!');
+                
+                // Reload member payments
+                loadMemberPayments(username);
+            } else {
+                alert(result.message || 'Failed to add payment');
+            }
+        }
+        
+        function openEditModal(username, paymentId) {
+            const payments = getMemberPayments(username);
+            const payment = payments.find(p => p.id === paymentId);
+            
+            if (!payment) {
+                alert('Payment not found');
+                return;
+            }
+            
+            // Fill form with payment data
+            document.getElementById('editPaymentYear').value = payment.year;
+            document.getElementById('editPaymentMonth').value = payment.month;
+            document.getElementById('editPaymentAmount').value = payment.amount;
+            document.getElementById('editPaymentDate').value = payment.paymentDate;
+            document.getElementById('editPaymentNotes').value = payment.notes;
+            document.getElementById('editPaymentId').value = payment.id;
+            
+            // Show modal
+            document.getElementById('editPaymentModal').style.display = 'flex';
+        }
+        
+        function savePaymentEdit() {
+            const memberSelect = document.getElementById('memberSelect');
+            
+            if (!memberSelect.value) {
+                alert('Please select a member first');
+                return;
+            }
+            
+            const username = memberSelect.value;
+            const paymentId = document.getElementById('editPaymentId').value;
+            
+            const updatedData = {
+                year: document.getElementById('editPaymentYear').value,
+                month: document.getElementById('editPaymentMonth').value,
+                amount: document.getElementById('editPaymentAmount').value,
+                paymentDate: document.getElementById('editPaymentDate').value,
+                notes: document.getElementById('editPaymentNotes').value
+            };
+            
+            // Update payment
+            const result = editPayment(username, paymentId, updatedData);
+            
+            if (result.success) {
+                // Close modal
+                document.getElementById('editPaymentModal').style.display = 'none';
+                
+                // Show success message
+                alert('Payment updated successfully!');
+                
+                // Reload member payments
+                loadMemberPayments(username);
+            } else {
+                alert(result.message || 'Failed to update payment');
+            }
+        }
+        
+        function deletePaymentRecord(username, paymentId) {
+            // Delete payment
+            const result = deletePayment(username, paymentId);
+            
+            if (result.success) {
+                // Show success message
+                alert('Payment deleted successfully!');
+                
+                // Reload member payments
+                loadMemberPayments(username);
+            } else {
+                alert(result.message || 'Failed to delete payment');
+            }
+        }
+    </script>
+</body>
+</html>

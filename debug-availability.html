@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Authentication Issues</title>
+    <script src="js/auth.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #facc15;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        code {
+            background-color: #f8f9fa;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .output {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .debug-info {
+            background-color: #e9f5ff;
+            border-left: 4px solid #0d6efd;
+            padding: 10px 15px;
+            margin: 10px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px 15px;
+            margin: 10px 0;
+        }
+        .error {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 10px 15px;
+            margin: 10px 0;
+        }
+        .success {
+            background-color: #d1e7dd;
+            border-left: 4px solid #198754;
+            padding: 10px 15px;
+            margin: 10px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Flash Running Club - Debug Authentication Issues</h1>
+        
+        <div class="section">
+            <h2>Current Authentication Status</h2>
+            <div class="debug-info">
+                <div id="authStatus">Checking authentication status...</div>
+            </div>
+            <button onclick="checkAuthStatus()">Refresh Status</button>
+            <button onclick="clearAuth()">Clear Auth Data</button>
+        </div>
+        
+        <div class="section">
+            <h2>Local Storage Contents</h2>
+            <div class="output" id="localStorageOutput">Loading...</div>
+            <button onclick="showLocalStorage()">Refresh</button>
+            <button onclick="clearLocalStorage()">Clear All</button>
+        </div>
+        
+        <div class="section">
+            <h2>Member Database</h2>
+            <div id="memberDbOutput" class="output">Loading...</div>
+            <button onclick="showMemberDb()">Refresh</button>
+            <button onclick="createTestMember()">Create Test Member</button>
+        </div>
+        
+        <div class="section">
+            <h2>Quick Login Test</h2>
+            <input type="text" id="testUsername" placeholder="Username" style="padding: 8px; margin: 5px; width: 200px;">
+            <input type="password" id="testPassword" placeholder="Password" style="padding: 8px; margin: 5px; width: 200px;">
+            <button onclick="testLogin()">Test Login</button>
+            <div id="loginTestResult"></div>
+        </div>
+        
+        <div class="section">
+            <h2>Session Management</h2>
+            <div id="sessionOutput" class="output">Loading...</div>
+            <button onclick="showSessions()">Refresh</button>
+            <button onclick="clearSessions()">Clear All Sessions</button>
+        </div>
+        
+        <div class="section">
+            <h2>Navigation</h2>
+            <button onclick="location.href='index.html'">Home</button>
+            <button onclick="location.href='member-login.html'">Member Login</button>
+            <button onclick="location.href='member-dashboard.html'">Member Dashboard</button>
+            <button onclick="location.href='member-current-training.html'">Current Training</button>
+            <button onclick="location.href='admin-login.html'">Admin Login</button>
+            <button onclick="location.href='login-test.html'">Login Test Page</button>
+        </div>
+    </div>
+
+    <script>
+        // Check current authentication status
+        function checkAuthStatus() {
+            const username = localStorage.getItem('username');
+            const userType = localStorage.getItem('userType');
+            const sessionId = localStorage.getItem('currentSessionId');
+            const statusDiv = document.getElementById('authStatus');
+            
+            if (!username || !userType) {
+                statusDiv.innerHTML = '<div class="warning">⚠️ Not logged in. No user data found in localStorage.</div>';
+                return;
+            }
+            
+            if (!sessionId) {
+                statusDiv.innerHTML = '<div class="error">❌ Missing session ID! User data exists but no active session.</div>';
+                return;
+            }
+            
+            // Get active sessions to verify
+            const sessions = JSON.parse(localStorage.getItem('activeSessions')) || {};
+            const userSessions = sessions[username] || [];
+            const currentSession = userSessions.find(s => s.sessionId === sessionId);
+            
+            if (!currentSession) {
+                statusDiv.innerHTML = '<div class="error">❌ Invalid session! Session ID not found in active sessions.</div>';
+                return;
+            }
+            
+            statusDiv.innerHTML = `
+                <div class="success">✅ Currently logged in</div>
+                <table>
+                    <tr><th>Username:</th><td>${username}</td></tr>
+                    <tr><th>User Type:</th><td>${userType}</td></tr>
+                    <tr><th>Session ID:</th><td>${sessionId}</td></tr>
+                    <tr><th>User Agent:</th><td>${currentSession.userAgent}</td></tr>
+                    <tr><th>Login Time:</th><td>${new Date(currentSession.timestamp).toLocaleString()}</td></tr>
+                </table>
+            `;
+        }
+        
+        // Show localStorage contents
+        function showLocalStorage() {
+            const output = document.getElementById('localStorageOutput');
+            let html = '<table><tr><th>Key</th><th>Value</th></tr>';
+            
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                let value = localStorage.getItem(key);
+                
+                // Format JSON for better readability
+                try {
+                    const parsedValue = JSON.parse(value);
+                    if (typeof parsedValue === 'object' && parsedValue !== null) {
+                        // Limit the display to avoid overwhelming the UI
+                        const valuePreview = JSON.stringify(parsedValue, null, 2).substring(0, 200);
+                        value = valuePreview + (valuePreview.length < value.length ? '...' : '');
+                    }
+                } catch (e) {
+                    // Not JSON, use as is
+                }
+                
+                html += `<tr><td>${key}</td><td><code>${value}</code></td></tr>`;
+            }
+            
+            html += '</table>';
+            output.innerHTML = html;
+        }
+        
+        // Show member database
+        function showMemberDb() {
+            const output = document.getElementById('memberDbOutput');
+            const members = JSON.parse(localStorage.getItem('memberDb')) || [];
+            
+            if (members.length === 0) {
+                output.innerHTML = '<div class="warning">No members in database.</div>';
+                return;
+            }
+            
+            let html = '<table><tr><th>Username</th><th>Password</th><th>Full Name</th><th>Email</th></tr>';
+            
+            members.forEach(member => {
+                html += `<tr>
+                    <td>${member.username || 'N/A'}</td>
+                    <td>${member.password || 'N/A'}</td>
+                    <td>${member.fullName || 'N/A'}</td>
+                    <td>${member.email || 'N/A'}</td>
+                </tr>`;
+            });
+            
+            html += '</table>';
+            output.innerHTML = html;
+        }
+        
+        // Show active sessions
+        function showSessions() {
+            const output = document.getElementById('sessionOutput');
+            const sessions = JSON.parse(localStorage.getItem('activeSessions')) || {};
+            
+            if (Object.keys(sessions).length === 0) {
+                output.innerHTML = '<div class="warning">No active sessions found.</div>';
+                return;
+            }
+            
+            let html = '';
+            
+            for (const username in sessions) {
+                html += `<h3>User: ${username}</h3>`;
+                html += '<table><tr><th>Session ID</th><th>User Type</th><th>Login Time</th></tr>';
+                
+                sessions[username].forEach(session => {
+                    html += `<tr>
+                        <td>${session.sessionId}</td>
+                        <td>${session.userType}</td>
+                        <td>${new Date(session.timestamp).toLocaleString()}</td>
+                    </tr>`;
+                });
+                
+                html += '</table>';
+            }
+            
+            output.innerHTML = html;
+        }
+        
+        // Create a test member
+        function createTestMember() {
+            const memberData = {
+                username: 'tester',
+                password: 'test123',
+                fullName: 'Test User',
+                email: 'test@example.com',
+                joinDate: new Date().toISOString().split('T')[0]
+            };
+            
+            if (addMember(memberData)) {
+                alert('Test member created! Username: tester, Password: test123');
+                showMemberDb();
+            } else {
+                alert('Username already exists!');
+            }
+        }
+        
+        // Test login
+        function testLogin() {
+            const username = document.getElementById('testUsername').value;
+            const password = document.getElementById('testPassword').value;
+            const resultDiv = document.getElementById('loginTestResult');
+            
+            if (!username || !password) {
+                resultDiv.innerHTML = '<div class="warning">Please enter username and password.</div>';
+                return;
+            }
+            
+            const members = JSON.parse(localStorage.getItem('memberDb')) || [];
+            const validMember = members.find(m => m.username === username && m.password === password);
+            
+            if (validMember) {
+                resultDiv.innerHTML = '<div class="success">✅ Credentials are valid! This would log you in.</div>';
+                
+                // Show a login button
+                resultDiv.innerHTML += `
+                    <button onclick="performLogin('${username}', '${password}')">
+                        Perform Actual Login
+                    </button>
+                `;
+            } else {
+                resultDiv.innerHTML = '<div class="error">❌ Invalid credentials. Check username and password.</div>';
+            }
+        }
+        
+        // Perform actual login
+        function performLogin(username, password) {
+            // Similar to loginAsMember but for direct testing
+            const members = JSON.parse(localStorage.getItem('memberDb')) || [];
+            const validMember = members.find(member => 
+                member.username === username && member.password === password);
+            
+            if (validMember) {
+                // Add new active session
+                const sessionId = addActiveSession(username, 'member');
+                
+                // Store login info in localStorage
+                localStorage.setItem('username', username);
+                localStorage.setItem('userType', 'member');
+                
+                alert('Login successful! Redirecting to dashboard...');
+                
+                // Redirect to member dashboard
+                setTimeout(() => {
+                    window.location.href = 'member-dashboard.html';
+                }, 500);
+            } else {
+                alert('Login failed!');
+            }
+        }
+        
+        // Clear authentication data
+        function clearAuth() {
+            localStorage.removeItem('username');
+            localStorage.removeItem('userType');
+            localStorage.removeItem('currentSessionId');
+            checkAuthStatus();
+            showLocalStorage();
+        }
+        
+        // Clear all localStorage
+        function clearLocalStorage() {
+            if (confirm('Are you sure you want to clear all localStorage data? This will remove all members, trainings, and events!')) {
+                localStorage.clear();
+                showLocalStorage();
+                showMemberDb();
+                showSessions();
+                checkAuthStatus();
+            }
+        }
+        
+        // Clear sessions
+        function clearSessions() {
+            if (confirm('Are you sure you want to clear all active sessions? This will log out all users.')) {
+                localStorage.setItem('activeSessions', JSON.stringify({}));
+                showSessions();
+                checkAuthStatus();
+            }
+        }
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthStatus();
+            showLocalStorage();
+            showMemberDb();
+            showSessions();
+        });
+    </script>
+</body>
+</html>

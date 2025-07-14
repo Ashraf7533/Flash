@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Member - Flash Running Club</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header" style="background-color: #facc15; display: flex; align-items: center; padding: 15px;">
+                <div class="sidebar-logo" style="display: flex; align-items: center; flex: 1;">
+                    <img src="3nwp2q1ufj.png" alt="Flash Running Club Logo" style="width: 30px; height: 30px; margin-right: 10px; vertical-align: middle; animation: logo-flash 2s infinite; border-radius: 50%;">
+                    <span style="font-weight: bold; font-size: 1rem; color: #000;">Admin Panel</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle" style="background: none; border: none; color: #000; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="admin-dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="members.html"><i class="fas fa-users"></i> All Members</a></li>
+                    <li><a href="add-member.html" class="active"><i class="fas fa-user-plus"></i> Add Member</a></li>
+                    <li><a href="training.html"><i class="fas fa-running"></i> Trainings</a></li>
+                    <li><a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a></li>
+                    <li><a href="payments.html"><i class="fas fa-credit-card"></i> Payments</a></li>
+                    <li><a href="photos.html"><i class="fas fa-images"></i> Photos</a></li>
+                    <li><a href="about-us.html"><i class="fas fa-info-circle"></i> About Us</a></li>
+                    <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <div class="hamburger" id="hamburger">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div>
+                    <img src="3nwp2q1ufj.png" alt="Flash Running Club Logo" style="width: 24px; height: 24px; margin-right: 5px; vertical-align: middle; animation: logo-flash 2s infinite;">
+                    <span style="font-size: 0.8rem; white-space: nowrap; font-weight: bold;">Flash Running Club</span>
+                </div>
+            </div>
+
+            <div class="content-header">
+                <h2>Add New Member</h2>
+                <p>Create a new member account</p>
+            </div>
+
+            <!-- Normal Add Member Form -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Member Information</h3>
+                </div>
+                <div class="card-body">
+                    <form id="addMemberForm">
+                        <!-- Personal Information Section -->
+                        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <h4 style="margin-top: 0; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 8px;">Personal Information</h4>
+                            
+                            <div class="form-group">
+                                <label for="membershipId">Membership ID</label>
+                                <input type="text" id="membershipId" class="form-control" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="fullName">Full Name</label>
+                                <input type="text" id="fullName" class="form-control" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input type="text" id="username" class="form-control" required>
+                                <small>Used for login</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" id="password" class="form-control" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" class="form-control" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" class="form-control" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="joinDate">Join Date</label>
+                                <input type="date" id="joinDate" class="form-control" required>
+                            </div>
+                        </div>
+                        
+                        <!-- Emergency Contact Section -->
+                        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <h4 style="margin-top: 0; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 8px;">Emergency Contact</h4>
+                            
+                            <div class="form-group">
+                                <label for="emergencyContactName">Emergency Contact Name</label>
+                                <input type="text" id="emergencyContactName" class="form-control" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="emergencyContactRelationship">Relationship</label>
+                                <input type="text" id="emergencyContactRelationship" class="form-control" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="emergencyContact">Emergency Contact Number</label>
+                                <input type="tel" id="emergencyContact" class="form-control" required>
+                            </div>
+                        </div>
+                        
+                        <!-- Health Information Section -->
+                        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <h4 style="margin-top: 0; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 8px;">Health Information</h4>
+                            
+                            <div class="form-group">
+                                <label for="healthCondition">Health Condition / Medical Information</label>
+                                <textarea id="healthCondition" class="form-control" rows="3" placeholder="Please list any health conditions, allergies, or medical information that may be relevant."></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Running Categories Section -->
+                        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <h4 style="margin-top: 0; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 8px;">Interested Categories</h4>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <!-- Road Events -->
+                                <div>
+                                    <h5 style="margin-top: 0; margin-bottom: 10px; font-size: 1rem;">Road Events</h5>
+                                    <div class="form-group" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                        <input type="checkbox" id="category5km" name="categories" value="5km" style="margin-right: 10px;">
+                                        <label for="category5km" style="margin-bottom: 0;">5km</label>
+                                    </div>
+                                    <div class="form-group" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                        <input type="checkbox" id="category10km" name="categories" value="10km" style="margin-right: 10px;">
+                                        <label for="category10km" style="margin-bottom: 0;">10km</label>
+                                    </div>
+                                    <div class="form-group" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                        <input type="checkbox" id="categoryHalfMarathon" name="categories" value="21km" style="margin-right: 10px;">
+                                        <label for="categoryHalfMarathon" style="margin-bottom: 0;">Half Marathon</label>
+                                    </div>
+                                    <div class="form-group" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                        <input type="checkbox" id="categoryMarathon" name="categories" value="42km" style="margin-right: 10px;">
+                                        <label for="categoryMarathon" style="margin-bottom: 0;">Marathon</label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Track Events -->
+                                <div>
+                                    <h5 style="margin-top: 0; margin-bottom: 10px; font-size: 1rem;">Track Events</h5>
+                                    <div class="form-group" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                        <input type="checkbox" id="category1500m" name="categories" value="1500m" style="margin-right: 10px;">
+                                        <label for="category1500m" style="margin-bottom: 0;">1500m</label>
+                                    </div>
+                                    <div class="form-group" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                        <input type="checkbox" id="category5000m" name="categories" value="5000m" style="margin-right: 10px;">
+                                        <label for="category5000m" style="margin-bottom: 0;">5000m</label>
+                                    </div>
+                                    <div class="form-group" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                        <input type="checkbox" id="category10000m" name="categories" value="10000m" style="margin-right: 10px;">
+                                        <label for="category10000m" style="margin-bottom: 0;">10000m</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="addMemberResult" class="text-center" style="margin: 10px 0;"></div>
+                        
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">Add Member</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/payments.js"></script>
+    <script src="js/members.js"></script>
+    <script src="js/sidebar.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default join date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('joinDate').value = today;
+            
+            // Check if user is logged in as admin
+            if (localStorage.getItem('userType') !== 'admin' || !localStorage.getItem('username')) {
+                window.location.href = 'admin-login.html';
+                return;
+            }
+
+            // Logout functionality
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                logout();
+            });
+
+            // Handle add member form submission
+            document.getElementById('addMemberForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value;
+                const resultElement = document.getElementById('addMemberResult');
+                
+                // Check required fields
+                if (!username || !password || !document.getElementById('fullName').value || 
+                    !document.getElementById('phone').value || !document.getElementById('email').value || 
+                    !document.getElementById('emergencyContact').value || !document.getElementById('joinDate').value ||
+                    !document.getElementById('membershipId').value || !document.getElementById('emergencyContactName').value ||
+                    !document.getElementById('emergencyContactRelationship').value) {
+                    resultElement.innerHTML = '<div style="color: red;">Please fill in all required fields.</div>';
+                    return;
+                }
+                
+                resultElement.innerHTML = '<div>Adding member...</div>';
+                
+                // Get the selected categories
+                const selectedCategories = [];
+                const categoryCheckboxes = document.querySelectorAll('input[name="categories"]:checked');
+                categoryCheckboxes.forEach(checkbox => {
+                    selectedCategories.push(checkbox.value);
+                });
+                
+                // First try to add member to local storage
+                const memberData = {
+                    // Basic Information
+                    membershipId: document.getElementById('membershipId').value.trim(),
+                    username: username,
+                    password: password,
+                    fullName: document.getElementById('fullName').value.trim(),
+                    phone: document.getElementById('phone').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    joinDate: document.getElementById('joinDate').value,
+                    
+                    // Emergency Contact Information
+                    emergencyContactName: document.getElementById('emergencyContactName').value.trim(),
+                    emergencyContactRelationship: document.getElementById('emergencyContactRelationship').value.trim(),
+                    emergencyContact: document.getElementById('emergencyContact').value.trim(),
+                    
+                    // Health Information
+                    healthCondition: document.getElementById('healthCondition').value.trim(),
+                    
+                    // Interested Categories
+                    interestedCategories: selectedCategories
+                };
+                
+                // Add to local storage
+                if (addMember(memberData)) {
+                    resultElement.innerHTML = '<div style="color: green;">Member added successfully!</div>';
+                    document.getElementById('addMemberForm').reset();
+                    document.getElementById('joinDate').value = today;
+                } else {
+                    resultElement.innerHTML = '<div style="color: red;">Username already exists. Please choose another.</div>';
+                    return;
+                }
+                // End of form submission handler
+            });
+        });
+    </script>
+</body>
+</html>

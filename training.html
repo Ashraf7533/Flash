@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Management - Flash Running Club</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Additional styles for training page */
+        .date-picker {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            width: 100%;
+        }
+        
+        .session-container {
+            margin-top: 20px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 15px;
+            background-color: #f9f9f9;
+        }
+        
+        .session-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #000;
+        }
+        
+        .training-date-display {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #facc15;
+            color: #000;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .training-preview {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px dashed #ddd;
+            border-radius: 5px;
+        }
+        
+        .member-select-container {
+            margin-bottom: 20px;
+        }
+
+        /* Pagination styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 5px;
+        }
+
+        .pagination-btn {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background-color: white;
+            color: #000;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .pagination-btn:hover {
+            background-color: #f0f0f0;
+        }
+
+        .pagination-btn.active {
+            background-color: #facc15;
+            color: #000;
+            border-color: #facc15;
+        }
+
+        .pagination-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        /* Search bar styles */
+        .search-container {
+            display: flex;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .search-btn {
+            padding: 10px 15px;
+            background-color: #facc15;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Past training styles */
+        .past-training {
+            background-color: #e9f7ef;
+            border-left: 4px solid #28a745;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 3px;
+        }
+
+        .completed-tag {
+            background-color: #28a745;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header" style="background-color: #facc15; display: flex; align-items: center; padding: 15px;">
+                <div class="sidebar-logo" style="display: flex; align-items: center; flex: 1;">
+                    <img src="3nwp2q1ufj.png" alt="Flash Running Club Logo" style="width: 30px; height: 30px; margin-right: 10px; vertical-align: middle; animation: logo-flash 2s infinite; border-radius: 50%;">
+                    <span style="font-weight: bold; font-size: 1rem; color: #000;">Admin Panel</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle" style="background: none; border: none; color: #000; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="admin-dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="members.html"><i class="fas fa-users"></i> All Members</a></li>
+                    <li><a href="add-member.html"><i class="fas fa-user-plus"></i> Add Member</a></li>
+                    <li><a href="training.html" class="active"><i class="fas fa-running"></i> Trainings</a></li>
+                    <li><a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a></li>
+                    <li><a href="payments.html"><i class="fas fa-credit-card"></i> Payments</a></li>
+                    <li><a href="photos.html"><i class="fas fa-images"></i> Photos</a></li>
+                    <li><a href="about-us.html"><i class="fas fa-info-circle"></i> About Us</a></li>
+                    <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <div class="hamburger" id="hamburger">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div>
+                    <img src="3nwp2q1ufj.png" alt="Flash Running Club Logo" style="width: 24px; height: 24px; margin-right: 5px; vertical-align: middle; animation: logo-flash 2s infinite;">
+                    <span style="font-size: 0.8rem; white-space: nowrap; font-weight: bold;">Flash Running Club</span>
+                </div>
+            </div>
+
+            <div class="content-header">
+                <h2>Trainings</h2>
+                <p>Create and assign training sessions to members</p>
+            </div>
+
+            <!-- Assign Training Form -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Create New Training</h3>
+                </div>
+                <div class="card-body">
+                    <form id="assignTrainingForm">
+                        <div class="form-group member-select-container">
+                            <label for="memberSelect">Select Member</label>
+                            <select id="memberSelect" class="form-control" required>
+                                <option value="">-- Select Member --</option>
+                                <!-- Members will be loaded dynamically -->
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="trainingDate">Training Date</label>
+                            <input type="date" id="trainingDate" class="date-picker" required>
+                        </div>
+                        
+                        <!-- Member Availability Section -->
+                        <div id="memberAvailabilitySection" style="margin-bottom: 20px; display: none;">
+                            <div style="background-color: #f9f9f9; border-left: 4px solid #facc15; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+                                <h4 style="margin-top: 0;"><i class="fas fa-calendar-check"></i> Member Weekly Availability</h4>
+                                <p style="margin-bottom: 5px;">This is the current availability set by the member. Members can update their availability for the next day only until 8:00 PM (20:00). After this cutoff time, availability is locked for admin training assignment.</p>
+                            </div>
+                            
+                            <!-- Single date view (hidden) -->
+                            <div class="availability-display" id="singleDateView" style="display: none;">
+                                <div style="flex: 1; padding: 15px; border: 1px solid #e0e0e0; border-radius: 5px; margin-right: 10px;">
+                                    <h5><i class="fas fa-sun"></i> Morning Session</h5>
+                                    <div id="morningAvailability" style="font-size: 1.2rem; font-weight: bold; margin-top: 10px;">
+                                        <!-- Morning availability will be shown here -->
+                                    </div>
+                                </div>
+                                <div style="flex: 1; padding: 15px; border: 1px solid #e0e0e0; border-radius: 5px; margin-left: 10px;">
+                                    <h5><i class="fas fa-moon"></i> Evening Session</h5>
+                                    <div id="eveningAvailability" style="font-size: 1.2rem; font-weight: bold; margin-top: 10px;">
+                                        <!-- Evening availability will be shown here -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Weekly availability view -->
+                            <div class="table-responsive" id="weeklyView" style="margin-top: 20px;">
+                                <table class="table table-bordered" style="margin-bottom: 0; width: 100%; border-collapse: collapse;">
+                                    <thead>
+                                        <tr style="background-color: #f5f5f5;">
+                                            <th style="text-align: center; width: 20%; padding: 10px; border: 1px solid #e0e0e0;">Day</th>
+                                            <th style="text-align: center; width: 40%; padding: 10px; border: 1px solid #e0e0e0;">Morning Session</th>
+                                            <th style="text-align: center; width: 40%; padding: 10px; border: 1px solid #e0e0e0;">Evening Session</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="weeklyAvailabilityBody">
+                                        <!-- Weekly availability data will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="training-date-display" id="dateDisplay" style="display: none;">
+                            Training for <span id="displayDate"></span>
+                        </div>
+                        
+                        <!-- Morning Session -->
+                        <div class="session-container">
+                            <div class="session-header"><i class="fas fa-sun"></i> Morning Session</div>
+                            <div class="form-group">
+                                <label for="morningDescription">Description (Press Enter for each point)</label>
+                                <textarea id="morningDescription" class="form-control" rows="4" placeholder="• Enter training points here (Press Enter for each new point)" style="padding-left: 20px;"></textarea>
+                                <input type="hidden" id="morningName" value="Morning Session">
+                            </div>
+                        </div>
+                        
+                        <!-- Evening Session -->
+                        <div class="session-container">
+                            <div class="session-header"><i class="fas fa-moon"></i> Evening Session</div>
+                            <div class="form-group">
+                                <label for="eveningDescription">Description (Press Enter for each point)</label>
+                                <textarea id="eveningDescription" class="form-control" rows="4" placeholder="• Enter training points here (Press Enter for each new point)" style="padding-left: 20px;"></textarea>
+                                <input type="hidden" id="eveningName" value="Evening Session">
+                            </div>
+                        </div>
+                        
+                        <div class="training-preview" id="trainingPreview" style="display: none;">
+                            <h3>Training Preview</h3>
+                            <div id="previewContent"></div>
+                        </div>
+                        
+                        <div class="form-group" style="margin-top: 30px; display: flex; justify-content: space-between; gap: 20px;">
+                            <button type="button" id="previewBtn" class="btn btn-secondary" style="flex: 1; padding: 12px 0;">Preview Training</button>
+                            <button type="submit" class="btn btn-primary" style="flex: 1; padding: 12px 0;">Assign Training</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Member Training Status -->
+            <div class="card mt-20">
+                <div class="card-header">
+                    <h3 class="card-title">Current Member Trainings</h3>
+                </div>
+                <div class="card-body">
+                    <div id="memberTrainingStatus">
+                        <div class="loading-message">Loading training status...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Past Trainings Section -->
+            <div class="card mt-20">
+                <div class="card-header">
+                    <h3 class="card-title">Past Trainings</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Search Bar -->
+                    <div class="search-container">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Search by member name or date...">
+                        <button id="searchBtn" class="search-btn"><i class="fas fa-search"></i> Search</button>
+                    </div>
+                    
+                    <!-- Past Training Listing -->
+                    <div id="pastTrainingContainer">
+                        <div class="loading-message">Loading past trainings...</div>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div class="pagination" id="paginationContainer">
+                        <!-- Pagination buttons will be generated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/availability.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/training.js"></script>
+    <script>
+        // Notification function
+function showNotification(message, type = 'info') {
+    // Create notification container if it doesn't exist
+    let notificationContainer = document.getElementById('notification-container');
+    if (!notificationContainer) {
+        notificationContainer = document.createElement('div');
+        notificationContainer.id = 'notification-container';
+        document.body.appendChild(notificationContainer);
+    }
+    
+    // Create the notification element
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    
+    // Add to container
+    notificationContainer.appendChild(notification);
+    
+    // Trigger animation after a small delay to ensure CSS transition works
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 10);
+    
+    // Remove notification after 3 seconds
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            if (notificationContainer.contains(notification)) {
+                notificationContainer.removeChild(notification);
+            }
+        }, 300); // Wait for fade out animation
+    }, 3000);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in as admin
+            if (localStorage.getItem('userType') !== 'admin' || localStorage.getItem('username') !== 'FlashRC12') {
+                window.location.href = 'admin-login.html';
+                return;
+            }
+
+            // Get DOM elements
+            const memberSelect = document.getElementById('memberSelect');
+            const trainingDate = document.getElementById('trainingDate');
+            const dateDisplay = document.getElementById('dateDisplay');
+            const displayDate = document.getElementById('displayDate');
+            const previewBtn = document.getElementById('previewBtn');
+            const trainingPreview = document.getElementById('trainingPreview');
+            const previewContent = document.getElementById('previewContent');
+            const searchInput = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+            const morningDescription = document.getElementById('morningDescription');
+            const eveningDescription = document.getElementById('eveningDescription');
+            
+            // Handle bullet points in description fields
+            function handleBulletPoints(textarea) {
+                textarea.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        
+                        const cursorPos = this.selectionStart;
+                        const textBeforeCursor = this.value.substring(0, cursorPos);
+                        const textAfterCursor = this.value.substring(cursorPos);
+                        
+                        // Add bullet point for new line
+                        this.value = textBeforeCursor + '\n• ' + textAfterCursor;
+                        
+                        // Move cursor after bullet point
+                        this.selectionStart = cursorPos + 3;
+                        this.selectionEnd = cursorPos + 3;
+                    }
+                });
+                
+                // Add initial bullet point if textarea is empty
+                textarea.addEventListener('focus', function() {
+                    if (this.value === '') {
+                        this.value = '• ';
+                        this.selectionStart = 2;
+                        this.selectionEnd = 2;
+                    }
+                });
+            }
+            
+            // Initialize bullet points in textareas
+            handleBulletPoints(morningDescription);
+            handleBulletPoints(eveningDescription);
+            
+            // Pagination variables
+            let currentPage = 1;
+            let itemsPerPage = 10;
+            let filteredPastTrainings = [];
+            let allPastTrainings = [];
+            
+            // Logout functionality
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                logout();
+            });
+            
+            // Search button click handler
+            searchBtn.addEventListener('click', function() {
+                searchPastTrainings();
+            });
+            
+            // Search input enter key handler
+            searchInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    searchPastTrainings();
+                }
+            });
+            
+            // Load members into select dropdown
+            loadMembersDropdown();
+            
+            // Load current training status and past trainings
+            loadTrainingStatus();
+            loadAllPastTrainings();
+            
+            // Setup real-time training updates
+            setupTrainingUpdates();
+            
+            // Set min date to today for the date picker
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            trainingDate.min = `${yyyy}-${mm}-${dd}`;
+            
+            // Date selection handler
+            trainingDate.addEventListener('change', function() {
+                if (this.value) {
+                    const formattedDate = new Date(this.value).toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    
+                    displayDate.textContent = formattedDate;
+                    dateDisplay.style.display = 'block';
+                    
+                    // Refresh availability display to highlight the selected date
+                    const selectedMember = document.getElementById('memberSelect').value;
+                    if (selectedMember) {
+                        showMemberAvailability(selectedMember);
+                    }
+                } else {
+                    dateDisplay.style.display = 'none';
+                }
+            });
+            
+            // Preview button handler
+            previewBtn.addEventListener('click', function() {
+                createTrainingPreview();
+            });
+            
+            // Form submission handler
+            document.getElementById('assignTrainingForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const memberUsername = memberSelect.value;
+                const tDate = trainingDate.value;
+                
+                const morningName = document.getElementById('morningName').value.trim();
+                const morningDescription = document.getElementById('morningDescription').value.trim();
+                
+                const eveningName = document.getElementById('eveningName').value.trim();
+                const eveningDescription = document.getElementById('eveningDescription').value.trim();
+                
+                if (!memberUsername || !tDate) {
+                    showNotification('Please select a member and date.', 'error');
+                    return;
+                }
+                
+                if (!morningDescription && !eveningDescription) {
+                    showNotification('Please provide at least one training session description.', 'error');
+                    return;
+                }
+                
+                const morningSession = morningDescription ? {
+                    name: morningName,
+                    description: morningDescription
+                } : null;
+                
+                const eveningSession = eveningDescription ? {
+                    name: eveningName,
+                    description: eveningDescription
+                } : null;
+                
+                if (addMemberTraining(memberUsername, tDate, morningSession, eveningSession)) {
+                        showNotification('Training assigned successfully!', 'success');
+                    this.reset();
+                    dateDisplay.style.display = 'none';
+                    trainingPreview.style.display = 'none';
+                    loadTrainingStatus();
+                    loadAllPastTrainings(); // Also refresh past trainings
+                } else {
+                    showNotification('Failed to assign training. Please try again.', 'error');
+                }
+            });
+
+            // Function to load all past trainings across all members
+            function loadAllPastTrainings() {
+                const membersWithTrainings = getAllMembersWithTrainings();
+                allPastTrainings = [];
+                
+                // Collect all past trainings from all members
+                membersWithTrainings.forEach(member => {
+                    if (member.pastTrainings && member.pastTrainings.length > 0) {
+                        // Add member name to each training
+                        const memberPastTrainings = member.pastTrainings.map(training => ({
+                            ...training,
+                            memberName: member.username
+                        }));
+                        allPastTrainings = [...allPastTrainings, ...memberPastTrainings];
+                    }
+                });
+                
+                // Sort by date, most recent first
+                allPastTrainings.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                // Set filtered trainings to all trainings initially
+                filteredPastTrainings = [...allPastTrainings];
+                
+                // Display the trainings
+                displayPastTrainings(1);
+            }
+            
+            // Function to search past trainings
+            function searchPastTrainings() {
+                const searchTerm = searchInput.value.toLowerCase();
+                
+                if (!searchTerm.trim()) {
+                    // If search is empty, show all past trainings
+                    filteredPastTrainings = [...allPastTrainings];
+                } else {
+                    // Filter the trainings based on search term
+                    filteredPastTrainings = allPastTrainings.filter(training => {
+                        const memberNameMatch = training.memberName.toLowerCase().includes(searchTerm);
+                        const dateMatch = new Date(training.date).toLocaleDateString('en-US').toLowerCase().includes(searchTerm);
+                        
+                        // Check if the training descriptions contain the search term
+                        let descriptionMatch = false;
+                        if (training.morningSession && training.morningSession.description) {
+                            descriptionMatch = descriptionMatch || training.morningSession.description.toLowerCase().includes(searchTerm);
+                        }
+                        if (training.eveningSession && training.eveningSession.description) {
+                            descriptionMatch = descriptionMatch || training.eveningSession.description.toLowerCase().includes(searchTerm);
+                        }
+                        
+                        return memberNameMatch || dateMatch || descriptionMatch;
+                    });
+                }
+                
+                // Reset to first page and display results
+                currentPage = 1;
+                displayPastTrainings(currentPage);
+            }
+            
+            // Function to display past trainings with pagination
+            function displayPastTrainings(page) {
+                const pastTrainingContainer = document.getElementById('pastTrainingContainer');
+                const paginationContainer = document.getElementById('paginationContainer');
+                
+                // Calculate pagination values
+                const totalItems = filteredPastTrainings.length;
+                const totalPages = Math.ceil(totalItems / itemsPerPage);
+                const startIndex = (page - 1) * itemsPerPage;
+                const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+                
+                // Update current page
+                currentPage = page;
+                
+                // Check if there are any trainings to display
+                if (totalItems === 0) {
+                    pastTrainingContainer.innerHTML = '<p>No past trainings found.</p>';
+                    paginationContainer.innerHTML = '';
+                    return;
+                }
+                
+                // Create HTML for the trainings to display on this page
+                let html = '';
+                for (let i = startIndex; i < endIndex; i++) {
+                    const training = filteredPastTrainings[i];
+                    const trainingDate = new Date(training.date).toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                    
+                    html += `
+                    <div class="past-training">
+                        <div class="training-session-time">
+                            ${trainingDate}
+                            <span class="completed-tag">Completed</span>
+                        </div>
+                        <div class="training-session-details">
+                            <strong>Member:</strong> ${training.memberName}<br>
+                            <strong>Assigned Date:</strong> ${new Date(training.date).toLocaleDateString('en-US')}<br>
+                            
+                            ${training.morningSession ? `
+                            <div style="margin-top: 10px;">
+                                <strong><i class="fas fa-sun"></i> Morning Session</strong>
+                                <p>${training.morningSession.description}</p>
+                            </div>
+                            ` : ''}
+                            
+                            ${training.eveningSession ? `
+                            <div style="margin-top: 10px;">
+                                <strong><i class="fas fa-moon"></i> Evening Session</strong>
+                                <p>${training.eveningSession.description}</p>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    `;
+                }
+                
+                pastTrainingContainer.innerHTML = html;
+                
+                // Create pagination controls
+                let paginationHtml = '';
+                
+                // Previous button
+                paginationHtml += `
+                <button class="pagination-btn" ${page === 1 ? 'disabled' : ''} 
+                        onclick="changePage(${page - 1})">
+                    <i class="fas fa-chevron-left"></i> Prev
+                </button>
+                `;
+                
+                // Page numbers
+                const maxPageButtons = 5;
+                let startPage = Math.max(1, page - Math.floor(maxPageButtons / 2));
+                let endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
+                
+                // Adjust start page if necessary
+                if (endPage - startPage < maxPageButtons - 1) {
+                    startPage = Math.max(1, endPage - maxPageButtons + 1);
+                }
+                
+                for (let i = startPage; i <= endPage; i++) {
+                    paginationHtml += `
+                    <button class="pagination-btn ${i === page ? 'active' : ''}" 
+                            onclick="changePage(${i})">
+                        ${i}
+                    </button>
+                    `;
+                }
+                
+                // Next button
+                paginationHtml += `
+                <button class="pagination-btn" ${page === totalPages ? 'disabled' : ''} 
+                        onclick="changePage(${page + 1})">
+                    Next <i class="fas fa-chevron-right"></i>
+                </button>
+                `;
+                
+                paginationContainer.innerHTML = paginationHtml;
+                
+                // Add pagination change page function to window scope
+                window.changePage = function(newPage) {
+                    if (newPage >= 1 && newPage <= totalPages) {
+                        displayPastTrainings(newPage);
+                    }
+                };
+            }
+        });
+        
+        function loadMembersDropdown() {
+            const memberSelect = document.getElementById('memberSelect');
+            const members = getAllMembers();
+            
+            // Clear existing options except the first one
+            while (memberSelect.options.length > 1) {
+                memberSelect.remove(1);
+            }
+            
+            // Add member options
+            members.forEach(member => {
+                const option = document.createElement('option');
+                option.value = member.username;
+                option.textContent = member.username;
+                memberSelect.appendChild(option);
+            });
+            
+            // Add change event to show availability when a member is selected
+            memberSelect.addEventListener('change', function() {
+                if (this.value) {
+                    showMemberAvailability(this.value);
+                } else {
+                    document.getElementById('memberAvailabilitySection').style.display = 'none';
+                }
+            });
+        }
+        
+        // Function to display member availability for the selected date and week
+        function showMemberAvailability(username) {
+            const availabilitySection = document.getElementById('memberAvailabilitySection');
+            const morningAvailability = document.getElementById('morningAvailability');
+            const eveningAvailability = document.getElementById('eveningAvailability');
+            const weeklyAvailabilityBody = document.getElementById('weeklyAvailabilityBody');
+            
+            // Get the selected date from the date picker
+            const selectedDate = document.getElementById('trainingDate').value;
+            
+            // If no date is selected, hide the availability section and return
+            if (!selectedDate) {
+                availabilitySection.style.display = 'none';
+                return;
+            }
+            
+            // Check if member has set any availability using centralized function
+            if (!memberHasAvailabilityData(username)) {
+                console.log('No availability data found for user');
+                // Show message to admin that member hasn't set availability
+                weeklyAvailabilityBody.innerHTML = `
+                    <tr>
+                        <td colspan="3" style="text-align: center; padding: 20px; color: #666; font-style: italic;">
+                            <i class="fas fa-info-circle"></i> 
+                            Member "${username}" has not set their weekly availability yet.
+                            <br><br>
+                            <small>Members can set their availability in their dashboard under "Training Availability".</small>
+                        </td>
+                    </tr>
+                `;
+                
+                // Hide single date availability as well
+                morningAvailability.innerHTML = '<span style="color: #666;"><i class="fas fa-info-circle"></i> Not set</span>';
+                eveningAvailability.innerHTML = '<span style="color: #666;"><i class="fas fa-info-circle"></i> Not set</span>';
+                
+                // Show the availability section anyway so admin can see the message
+                availabilitySection.style.display = 'block';
+                return;
+            }
+            
+            // Get availability for the selected date using centralized function
+            const selectedDateObj = new Date(selectedDate);
+            const dayAvailability = getMemberAvailabilityForDate(username, selectedDateObj);
+            
+            console.log('Checking availability for:', selectedDate);
+            console.log('Day availability found:', dayAvailability);
+            
+            // Display morning availability for selected date
+            if (dayAvailability.morning === true) {
+                morningAvailability.innerHTML = '<span style="color: #28a745;"><i class="fas fa-check-circle"></i> Available</span>';
+            } else {
+                morningAvailability.innerHTML = '<span style="color: #dc3545;"><i class="fas fa-times-circle"></i> Unavailable</span>';
+            }
+            
+            // Display evening availability for selected date
+            if (dayAvailability.evening === true) {
+                eveningAvailability.innerHTML = '<span style="color: #28a745;"><i class="fas fa-check-circle"></i> Available</span>';
+            } else {
+                eveningAvailability.innerHTML = '<span style="color: #dc3545;"><i class="fas fa-times-circle"></i> Unavailable</span>';
+            }
+            
+            // Calculate the first day of the week (Sunday) for the selected date
+            const dayOfWeek = selectedDateObj.getDay();
+            const weekStart = new Date(selectedDateObj);
+            weekStart.setDate(weekStart.getDate() - dayOfWeek);
+            
+            // Get week availability using centralized function
+            const weekAvailability = getMemberAvailabilityForWeek(username, weekStart);
+            
+            // Now populate the weekly view
+            weeklyAvailabilityBody.innerHTML = '';
+            
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            
+            // Generate rows for each day of the week
+            weekAvailability.forEach((dayData, i) => {
+                const currentDayOfWeek = dayData.dayName;
+                const displayDate = `${monthNames[dayData.date.getMonth()]} ${dayData.date.getDate()}, ${dayData.date.getFullYear()}`;
+                
+                console.log(`Day ${i} (${currentDayOfWeek}): Available=${JSON.stringify({morning: dayData.morning, evening: dayData.evening})}`);
+                
+                // Check if this is the selected date
+                const isSelectedDay = dayData.date.toDateString() === selectedDateObj.toDateString();
+                
+                // Create table row
+                const row = document.createElement('tr');
+                if (isSelectedDay) {
+                    row.style.backgroundColor = '#fff8e1'; // Highlight selected date
+                }
+                
+                // Create cell for day name and date
+                const dayCell = document.createElement('td');
+                dayCell.style.textAlign = 'center';
+                dayCell.style.padding = '10px';
+                dayCell.style.border = '1px solid #e0e0e0';
+                dayCell.style.verticalAlign = 'middle';
+                dayCell.innerHTML = `
+                    <strong>${currentDayOfWeek}</strong><br>
+                    <small>${displayDate}</small>
+                `;
+                
+                // Create cell for morning availability
+                const morningCell = document.createElement('td');
+                morningCell.style.textAlign = 'center';
+                morningCell.style.padding = '10px';
+                morningCell.style.border = '1px solid #e0e0e0';
+                morningCell.style.verticalAlign = 'middle';
+                morningCell.innerHTML = dayData.morning === true ? 
+                    '<span style="color: #28a745;"><i class="fas fa-check-circle"></i> Available</span>' : 
+                    '<span style="color: #dc3545;"><i class="fas fa-times-circle"></i> Unavailable</span>';
+                
+                // Create cell for evening availability
+                const eveningCell = document.createElement('td');
+                eveningCell.style.textAlign = 'center';
+                eveningCell.style.padding = '10px';
+                eveningCell.style.border = '1px solid #e0e0e0';
+                eveningCell.style.verticalAlign = 'middle';
+                eveningCell.innerHTML = dayData.evening === true ? 
+                    '<span style="color: #28a745;"><i class="fas fa-check-circle"></i> Available</span>' : 
+                    '<span style="color: #dc3545;"><i class="fas fa-times-circle"></i> Unavailable</span>';
+                
+                // Add cells to row
+                row.appendChild(dayCell);
+                row.appendChild(morningCell);
+                row.appendChild(eveningCell);
+                
+                // Add row to table
+                weeklyAvailabilityBody.appendChild(row);
+            });
+            
+            // Show the availability section
+            availabilitySection.style.display = 'block';
+        }
+        
+        // Helper function to get week number and year - now uses centralized function
+        function getWeekNumber(date) {
+            return getStandardWeekNumber(date);
+        }
+        
+        function createTrainingPreview() {
+            const memberUsername = document.getElementById('memberSelect').value;
+            const tDate = document.getElementById('trainingDate').value;
+            
+            const morningName = document.getElementById('morningName').value.trim();
+            const morningDescription = document.getElementById('morningDescription').value.trim();
+            
+            const eveningName = document.getElementById('eveningName').value.trim();
+            const eveningDescription = document.getElementById('eveningDescription').value.trim();
+            
+            if (!memberUsername || !tDate) {
+                showNotification('Please select a member and date first.', 'error');
+                return;
+            }
+            
+            if (!morningDescription && !eveningDescription) {
+                showNotification('Please provide at least one training session description.', 'error');
+                return;
+            }
+            
+            const dateObj = new Date(tDate);
+            const formattedDate = dateObj.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            let previewHtml = `
+                <div class="preview-header" style="margin-bottom: 15px;">
+                    <strong>Member:</strong> ${memberUsername}<br>
+                    <strong>Date:</strong> ${formattedDate}
+                </div>
+            `;
+            
+            if (morningDescription) {
+                previewHtml += `
+                    <div class="training-session">
+                        <div class="training-session-time"><i class="fas fa-sun"></i> Morning Session</div>
+                        <div class="training-session-details">
+                            <ul>
+                                ${morningDescription.split('\n').filter(line => line.trim()).map(line => `<li>${line.trim()}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            if (eveningDescription) {
+                previewHtml += `
+                    <div class="training-session">
+                        <div class="training-session-time"><i class="fas fa-moon"></i> Evening Session</div>
+                        <div class="training-session-details">
+                            <ul>
+                                ${eveningDescription.split('\n').filter(line => line.trim()).map(line => `<li>${line.trim()}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('previewContent').innerHTML = previewHtml;
+            document.getElementById('trainingPreview').style.display = 'block';
+            document.getElementById('trainingPreview').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function loadTrainingStatus() {
+            const statusContainer = document.getElementById('memberTrainingStatus');
+            const members = getAllMembersWithTrainings();
+            
+            if (members.length === 0) {
+                statusContainer.innerHTML = '<p>No members found.</p>';
+                return;
+            }
+            
+            let html = '';
+            
+            members.forEach(member => {
+                if (member.currentTrainings.length === 0) {
+                    return; // Skip members with no current trainings
+                }
+                
+                html += `
+                <div class="member-status">
+                    <h4 style="text-align: center;">${member.username}</h4>
+                    <div class="training-list">
+                `;
+                
+                member.currentTrainings.forEach(training => {
+                    const trainingDate = new Date(training.date).toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                    
+                    html += `<div class="training-status" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <span class="training-name">${trainingDate}</span>
+                            <span class="badge" style="background-color: #007bff; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.8em;">
+                                In Progress
+                            </span>
+                        </div>
+                        <div class="training-actions">
+                            <button class="btn btn-primary btn-sm edit-training" data-username="${member.username}" data-date="${training.date}" style="margin-right: 5px; font-size: 0.8em; padding: 3px 8px;">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="btn btn-secondary btn-sm delete-training" data-username="${member.username}" data-date="${training.date}" style="font-size: 0.8em; padding: 3px 8px;">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>`;
+                    
+                    if (training.morningSession) {
+                        html += `
+                        <div class="session-details" style="margin-left: 20px; margin-bottom: 10px;">
+                            <strong><i class="fas fa-sun"></i> Morning Session</strong>
+                            <div style="margin-left: 10px; margin-top: 5px;">
+                                <ul style="padding-left: 20px;">
+                                    ${training.morningSession.description.split('\n').filter(line => line.trim()).map(line => `<li>${line.trim().replace(/^•\s*/, '')}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                        `;
+                    }
+                    
+                    if (training.eveningSession) {
+                        html += `
+                        <div class="session-details" style="margin-left: 20px; margin-bottom: 10px;">
+                            <strong><i class="fas fa-moon"></i> Evening Session</strong>
+                            <div style="margin-left: 10px; margin-top: 5px;">
+                                <ul style="padding-left: 20px;">
+                                    ${training.eveningSession.description.split('\n').filter(line => line.trim()).map(line => `<li>${line.trim().replace(/^•\s*/, '')}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                        `;
+                    }
+                });
+                
+                html += `
+                    </div>
+                </div>
+                <hr>
+                `;
+            });
+            
+            if (html === '') {
+                html = '<p>No current trainings assigned to any members.</p>';
+            }
+            
+            statusContainer.innerHTML = html;
+            
+            // Add event listeners for edit and delete buttons
+            document.querySelectorAll('.edit-training').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const username = this.getAttribute('data-username');
+                    const date = this.getAttribute('data-date');
+                    editTraining(username, date);
+                });
+            });
+            
+            document.querySelectorAll('.delete-training').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const username = this.getAttribute('data-username');
+                    const date = this.getAttribute('data-date');
+                    deleteTrainingConfirm(username, date);
+                });
+            });
+        }
+        
+        // Function to load a training for editing
+        function editTraining(username, date) {
+            const membersWithTrainings = getAllMembersWithTrainings();
+            const member = membersWithTrainings.find(m => m.username === username);
+            
+            if (!member) {
+                showNotification('Member not found', 'error');
+                return;
+            }
+            
+            const training = member.currentTrainings.find(t => t.date === date);
+            
+            if (!training) {
+                showNotification('Training not found', 'error');
+                return;
+            }
+            
+            // Set form fields
+            document.getElementById('memberSelect').value = username;
+            document.getElementById('trainingDate').value = date;
+            
+            // Trigger date display update
+            const formattedDate = new Date(date).toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            document.getElementById('displayDate').textContent = formattedDate;
+            document.getElementById('dateDisplay').style.display = 'block';
+            
+            // Set morning and evening descriptions
+            if (training.morningSession) {
+                document.getElementById('morningDescription').value = training.morningSession.description;
+            } else {
+                document.getElementById('morningDescription').value = '';
+            }
+            
+            if (training.eveningSession) {
+                document.getElementById('eveningDescription').value = training.eveningSession.description;
+            } else {
+                document.getElementById('eveningDescription').value = '';
+            }
+            
+            // Scroll to form
+            document.querySelector('.card').scrollIntoView({ behavior: 'smooth' });
+            
+            // Show user notification
+            showNotification('Training loaded for editing', 'info');
+        }
+        
+        // Function to confirm and delete a training
+        function deleteTrainingConfirm(username, date) {
+            if (confirm(`Are you sure you want to delete this training for ${username}?`)) {
+                const success = deleteMemberTraining(username, date);
+                
+                if (success) {
+                    showNotification('Training deleted successfully', 'success');
+                    loadTrainingStatus();
+                    loadAllPastTrainings();
+                } else {
+                    showNotification('Failed to delete training', 'error');
+                }
+            }
+        }
+        
+        // Use the centralized training functions from training.js
+        
+        // Function to setup real-time training updates
+        function setupTrainingUpdates() {
+            // Store the current timestamp when the page loads
+            let lastCheckedTimestamp = getTrainingUpdateTimestamp();
+            
+            // Check for updates every 5 seconds
+            setInterval(() => {
+                if (checkForTrainingUpdates(lastCheckedTimestamp)) {
+                    // Update the last checked timestamp
+                    lastCheckedTimestamp = getTrainingUpdateTimestamp();
+                    
+                    // Reload trainings if there's an update
+                    loadTrainingStatus();
+                    loadAllPastTrainings();
+                    console.log('Training data updated');
+                }
+            }, 5000); // Check every 5 seconds
+        }
+    </script>
+</body>
+</html>

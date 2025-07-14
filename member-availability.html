@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Availability - Flash Running Club</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Availability specific styles */
+        .week-selector {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+        
+        .week-display {
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        .availability-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .availability-table th, 
+        .availability-table td {
+            border: 1px solid #e0e0e0;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .availability-table th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+        
+        .availability-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .availability-toggle {
+            display: inline-block;
+            position: relative;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .availability-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 30px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #facc15;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
+        
+        .day-name {
+            font-weight: bold;
+        }
+        
+        .day-date {
+            font-size: 0.85rem;
+            color: #666;
+            display: block;
+            margin-top: 3px;
+        }
+        
+        .locked {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .availability-label {
+            display: block;
+            margin-top: 5px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        
+        .available {
+            color: #28a745;
+        }
+        
+        .unavailable {
+            color: #dc3545;
+        }
+        
+        .today-highlight {
+            background-color: #fff8e1 !important;
+        }
+        
+        .week-instructions {
+            background-color: #f9f9f9;
+            border-left: 4px solid #facc15;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header" style="background-color: #facc15; display: flex; align-items: center; padding: 15px;">
+                <div id="sidebarAvatar" style="width: 50px; height: 50px; border-radius: 50%; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; margin-right: 10px; font-size: 1.5rem; overflow: hidden; border: 2px solid black;"></div>
+                <div id="sidebarMemberName" style="color: #000; font-weight: bold; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;"></div>
+                <button class="sidebar-toggle" id="sidebarToggle" style="background: none; border: none; color: #000; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="member-dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="member-availability.html" class="active"><i class="fas fa-calendar-check"></i> Training Availability</a></li>
+                    <li><a href="member-current-training.html"><i class="fas fa-running"></i> Current Trainings</a></li>
+                    <li><a href="member-payments.html"><i class="fas fa-credit-card"></i> Payments</a></li>
+                    <li><a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a></li>
+                    <li><a href="photos.html"><i class="fas fa-images"></i> Photos</a></li>
+                    <li><a href="about-us.html"><i class="fas fa-info-circle"></i> About Us</a></li>
+                    <li><a href="member-profile.html"><i class="fas fa-user"></i> Profile</a></li>
+                    <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <div class="hamburger" id="hamburger">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <img src="3nwp2q1ufj.png" alt="Flash Running Club Logo" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: middle; animation: logo-flash 2s infinite;">
+                    <span style="font-size: 0.9rem; white-space: nowrap; font-weight: bold;">Flash Running Club</span>
+                </div>
+            </div>
+
+            <div class="content-header">
+                <h2>Weekly Training Availability</h2>
+                <p>Set your availability for upcoming training sessions - remember to update before 8:00 PM each day!</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Your Weekly Availability</h3>
+                </div>
+                <div class="card-body">
+                    <div class="week-instructions">
+                        <p><i class="fas fa-info-circle"></i> <strong>Important:</strong> Please update your availability for each day of the week. You can change your status for tomorrow only until 8:00 PM (20:00) today. After 8:00 PM, tomorrow's availability will be locked for admin training assignment. The system automatically locks availability at the cutoff time.</p>
+                    </div>
+                    
+                    <div class="week-selector">
+                        <button id="prevWeekBtn" class="btn btn-sm btn-secondary"><i class="fas fa-chevron-left"></i> Prev</button>
+                        <div class="week-display" id="weekDisplay">
+                            Week of May 1-7, 2025
+                        </div>
+                        <button id="nextWeekBtn" class="btn btn-sm btn-secondary">Next <i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="availability-table">
+                            <thead>
+                                <tr>
+                                    <th>Day</th>
+                                    <th>Morning Session</th>
+                                    <th>Evening Session</th>
+                                </tr>
+                            </thead>
+                            <tbody id="availabilityTableBody">
+                                <!-- Table rows will be generated by JavaScript -->
+                                <tr>
+                                    <td colspan="3" class="text-center">Loading availability data...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="text-center" style="margin-top: 20px;">
+                        <button id="saveAvailabilityBtn" class="btn btn-primary">Save Availability</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/availability.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/members.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in as member
+            if (localStorage.getItem('userType') !== 'member' || !localStorage.getItem('username')) {
+                window.location.href = 'member-login.html';
+                return;
+            }
+
+            const username = localStorage.getItem('username');
+            
+            // Display user's name and avatar in the sidebar
+            displayMemberInfo(username);
+            
+            // Initialize availability system
+            initializeAvailability();
+            
+            // Set up automatic refresh at midnight and every hour to check for locked days
+            setupAutoRefresh();
+            
+            // Logout functionality
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                logout();
+            });
+            
+            // No need for training button redirects - they use direct links now
+        });
+        
+        // Set up automatic refresh of the availability table
+        function setupAutoRefresh() {
+            // Calculate time until next midnight
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+            
+            const timeUntilMidnight = tomorrow - now;
+            
+            // Refresh at midnight
+            setTimeout(function() {
+                // Reload the current week view to update locked days
+                const currentWeekStart = new Date();
+                currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay());
+                currentWeekStart.setHours(0, 0, 0, 0);
+                
+                displayWeek(currentWeekStart);
+                
+                // Set up the next day's refresh
+                setupAutoRefresh();
+            }, timeUntilMidnight);
+            
+            // Also check every hour for changes in availability status
+            setInterval(function() {
+                const currentWeekStart = new Date();
+                currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay());
+                currentWeekStart.setHours(0, 0, 0, 0);
+                
+                displayWeek(currentWeekStart);
+            }, 60 * 60 * 1000); // Check every hour
+        }
+
+        // Function to display member information in sidebar
+        function displayMemberInfo(username) {
+            try {
+                const members = getAllMembers();
+                const member = members.find(m => m.username === username);
+                
+                if (member) {
+                    // Update sidebar with name
+                    let displayName = username;
+                    if (member.fullName) {
+                        displayName = member.fullName;
+                    } else if (member.firstName) {
+                        if (member.middleName) {
+                            displayName = `${member.firstName} ${member.middleName}`;
+                        } else if (member.lastName) {
+                            displayName = `${member.firstName} ${member.lastName}`;
+                        } else {
+                            displayName = member.firstName;
+                        }
+                    }
+                    document.getElementById('sidebarMemberName').textContent = displayName;
+                    
+                    // Set avatar image or initials in the sidebar
+                    const sidebarAvatar = document.getElementById('sidebarAvatar');
+                    if (member.profilePhoto) {
+                        sidebarAvatar.innerHTML = `<img src="${member.profilePhoto}" alt="${username}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                    } else {
+                        const initial = member.firstName ? member.firstName.charAt(0).toUpperCase() : username.charAt(0).toUpperCase();
+                        sidebarAvatar.innerHTML = initial;
+                    }
+                }
+            } catch (error) {
+                console.error('Error displaying member info:', error);
+            }
+        }
+        
+        // Initialize availability system
+        function initializeAvailability() {
+            // Get or initialize availability data
+            if (!localStorage.getItem('memberAvailability')) {
+                localStorage.setItem('memberAvailability', JSON.stringify({}));
+            }
+            
+            // Set up current week view
+            let currentWeekStart = new Date();
+            currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay()); // Start of current week (Sunday)
+            currentWeekStart.setHours(0, 0, 0, 0); // Reset time to start of day
+            
+            // Display current week
+            displayWeek(currentWeekStart);
+            
+            // Previous week button
+            document.getElementById('prevWeekBtn').addEventListener('click', function() {
+                const newDate = new Date(currentWeekStart);
+                newDate.setDate(newDate.getDate() - 7);
+                currentWeekStart = newDate;
+                displayWeek(currentWeekStart);
+            });
+            
+            // Next week button
+            document.getElementById('nextWeekBtn').addEventListener('click', function() {
+                const newDate = new Date(currentWeekStart);
+                newDate.setDate(newDate.getDate() + 7);
+                currentWeekStart = newDate;
+                displayWeek(currentWeekStart);
+            });
+            
+            // Save availability button
+            document.getElementById('saveAvailabilityBtn').addEventListener('click', function() {
+                saveAvailability(currentWeekStart);
+            });
+        }
+        
+        // Display week availability
+        function displayWeek(weekStart) {
+            const username = localStorage.getItem('username');
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            
+            // Update week display
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const weekStartStr = `${monthNames[weekStart.getMonth()]} ${weekStart.getDate()}, ${weekStart.getFullYear()}`;
+            const weekEndStr = `${monthNames[weekEnd.getMonth()]} ${weekEnd.getDate()}, ${weekEnd.getFullYear()}`;
+            document.getElementById('weekDisplay').textContent = `Week of ${weekStartStr} - ${weekEndStr}`;
+            
+            // Get availability data
+            const availabilityData = JSON.parse(localStorage.getItem('memberAvailability')) || {};
+            const userAvailability = availabilityData[username] || {};
+            
+            // Generate table rows
+            const tableBody = document.getElementById('availabilityTableBody');
+            tableBody.innerHTML = '';
+            
+            // Get current date and time (to determine if past days or current day after midnight should be locked)
+            const now = new Date();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            // Calculate week number and year for display
+            const weekNumberYear = getWeekNumber(weekStart);
+            
+            for (let i = 0; i < 7; i++) {
+                const day = new Date(weekStart);
+                day.setDate(day.getDate() + i);
+                
+                // Format date for display
+                const dayOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][day.getDay()];
+                const formattedDate = `${day.getFullYear()}-${(day.getMonth() + 1).toString().padStart(2, '0')}-${day.getDate().toString().padStart(2, '0')}`;
+                const displayDate = `${monthNames[day.getMonth()]} ${day.getDate()}, ${day.getFullYear()}`;
+                
+                // Check if this day is in the past or if it's today but after midnight
+                // Also check if it's the next day and current time is past 20:00 (8pm)
+                const tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                
+                // Check if we're looking at Sunday
+                const isSunday = day.getDay() === 0;
+                
+                // Logic for locking days:
+                // 1. Past days are ALWAYS locked (cannot edit history)
+                // 2. Tomorrow is locked after 8PM today (for next day planning)
+                // 3. Today and future days can be edited unless specifically locked
+                const isPastDay = day < today;
+                const isTomorrowAfter8PM = (day.getTime() === tomorrow.getTime()) && now.getHours() >= 20;
+                const isLocked = isPastDay || isTomorrowAfter8PM;
+                
+                // Get saved availability for this day using centralized function
+                const dayAvailability = getMemberAvailabilityForDate(username, day);
+                
+                // DEBUG: Show what data we have
+                console.log(`Day ${day.toDateString()}: `, dayAvailability);
+                
+                // Use the centralized key generation
+                const dayKey = generateAvailabilityKey(day);
+                
+                // Create table row
+                const row = document.createElement('tr');
+                if (day.getTime() === today.getTime()) {
+                    row.classList.add('today-highlight');
+                }
+                
+                row.innerHTML = `
+                    <td>
+                        <span class="day-name">${dayOfWeek}</span>
+                        <span class="day-date">${displayDate}</span>
+                    </td>
+                    <td class="${isLocked ? 'locked' : ''}">
+                        <label class="availability-toggle">
+                            <input type="checkbox" class="availability-checkbox" data-day="${dayKey}" data-time="morning" ${dayAvailability.morning ? 'checked' : ''} ${isLocked ? 'disabled' : ''}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="availability-label ${dayAvailability.morning ? 'available' : 'unavailable'}">
+                            ${dayAvailability.morning ? 'Available' : 'Unavailable'}
+                            ${isLocked ? (isPastDay ? ' (Past)' : ' (Locked)') : ''}
+                        </span>
+                    </td>
+                    <td class="${isLocked ? 'locked' : ''}">
+                        <label class="availability-toggle">
+                            <input type="checkbox" class="availability-checkbox" data-day="${dayKey}" data-time="evening" ${dayAvailability.evening ? 'checked' : ''} ${isLocked ? 'disabled' : ''}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="availability-label ${dayAvailability.evening ? 'available' : 'unavailable'}">
+                            ${dayAvailability.evening ? 'Available' : 'Unavailable'}
+                            ${isLocked ? (isPastDay ? ' (Past)' : ' (Locked)') : ''}
+                        </span>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            }
+            
+            // Add event listeners to checkboxes to update labels in real-time
+            document.querySelectorAll('.availability-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const label = this.parentElement.nextElementSibling;
+                    if (this.checked) {
+                        label.textContent = 'Available';
+                        label.classList.remove('unavailable');
+                        label.classList.add('available');
+                    } else {
+                        label.textContent = 'Unavailable';
+                        label.classList.remove('available');
+                        label.classList.add('unavailable');
+                    }
+                });
+            });
+        }
+        
+        // Save availability
+        function saveAvailability(weekStart) {
+            const username = localStorage.getItem('username');
+            
+            // Get all enabled checkboxes
+            const checkboxes = document.querySelectorAll('.availability-checkbox:not([disabled])');
+            
+            // Group checkboxes by day
+            const checkboxesByDay = {};
+            checkboxes.forEach(checkbox => {
+                const dayKey = checkbox.getAttribute('data-day');
+                if (!checkboxesByDay[dayKey]) {
+                    checkboxesByDay[dayKey] = [];
+                }
+                checkboxesByDay[dayKey].push(checkbox);
+            });
+            
+            // Process each day's checkboxes and save using centralized function
+            Object.keys(checkboxesByDay).forEach(dayKey => {
+                const availability = { morning: false, evening: false };
+                
+                // Update with current checkbox values
+                checkboxesByDay[dayKey].forEach(checkbox => {
+                    const timeOfDay = checkbox.getAttribute('data-time');
+                    availability[timeOfDay] = checkbox.checked;
+                });
+                
+                // Extract date from dayKey format: "YYYY-W-D"
+                const [year, week, dayOfWeek] = dayKey.split('-').map(Number);
+                
+                // Calculate the actual date for this day
+                const date = getDateFromWeekAndDay(year, week, dayOfWeek);
+                
+                // Save using centralized function
+                setMemberAvailabilityForDate(username, date, availability);
+            });
+            
+            // Additionally, for each day in the current week, save availability if checkbox exists
+            // This ensures admin can see all updates immediately
+            for (let i = 0; i < 7; i++) {
+                const day = new Date(weekStart);
+                day.setDate(day.getDate() + i);
+                
+                const morningCheckbox = document.querySelector(`input[data-day="${generateAvailabilityKey(day)}"][data-time="morning"]`);
+                const eveningCheckbox = document.querySelector(`input[data-day="${generateAvailabilityKey(day)}"][data-time="evening"]`);
+                
+                if (morningCheckbox && eveningCheckbox) {
+                    const availability = {
+                        morning: morningCheckbox.checked,
+                        evening: eveningCheckbox.checked
+                    };
+                    
+                    setMemberAvailabilityForDate(username, day, availability);
+                }
+            }
+            
+            // Refresh the display to show saved values
+            displayWeek(weekStart);
+            
+            // Show success message
+            alert('Your training availability has been saved!');
+        }
+        
+        // Helper function to convert week number back to date
+        function getDateFromWeekAndDay(year, week, dayOfWeek) {
+            // Find the first Thursday of the year
+            const firstThursday = new Date(year, 0, 4);
+            firstThursday.setDate(firstThursday.getDate() + 3 - (firstThursday.getDay() + 6) % 7);
+            
+            // Calculate the start of the target week
+            const targetWeekStart = new Date(firstThursday);
+            targetWeekStart.setDate(firstThursday.getDate() + (week - 1) * 7 - 3);
+            
+            // Add days to get to the target day of week
+            const targetDate = new Date(targetWeekStart);
+            targetDate.setDate(targetWeekStart.getDate() + dayOfWeek);
+            
+            return targetDate;
+        }
+        
+        // Helper function to get week number and year - now uses centralized function
+        function getWeekNumber(date) {
+            return getStandardWeekNumber(date);
+        }
+    </script>
+</body>
+</html>

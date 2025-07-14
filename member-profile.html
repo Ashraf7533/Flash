@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Flash Running Club</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Profile page specific styles */
+        .profile-section {
+            margin-bottom: 20px;
+        }
+        
+        .profile-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            font-size: 2.8rem;
+            color: #666;
+            border: 3px solid #facc15;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .avatar-upload {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(0,0,0,0.5);
+            color: white;
+            text-align: center;
+            padding: 5px 0;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: opacity 0.3s;
+            opacity: 0;
+        }
+        
+        .profile-avatar:hover .avatar-upload {
+            opacity: 1;
+        }
+        
+        .profile-info {
+            flex: 1;
+        }
+        
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .profile-email {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .readonly-field {
+            background-color: #f9f9f9;
+            color: #666;
+        }
+        
+        .btn-update {
+            background-color: #facc15;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .notification {
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .notification-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .notification-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        #profilePhotoInput {
+            display: none;
+        }
+        
+        .running-times-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        .running-times-table th,
+        .running-times-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .running-times-table th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+        
+        .edit-time-btn {
+            background-color: #facc15;
+            color: #000;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .time-input {
+            width: 120px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header" style="background-color: #facc15; display: flex; align-items: center; padding: 15px;">
+                <div id="sidebarAvatar" style="width: 50px; height: 50px; border-radius: 50%; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; margin-right: 10px; font-size: 1.5rem; overflow: hidden; border: 2px solid black;"></div>
+                <div id="sidebarMemberName" style="color: #000; font-weight: bold; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;"></div>
+                <button class="sidebar-toggle" id="sidebarToggle" style="background: none; border: none; color: #000; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="member-dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="member-availability.html"><i class="fas fa-calendar-check"></i> Training Availability</a></li>
+                    <li><a href="member-current-training.html"><i class="fas fa-running"></i> Current Trainings</a></li>
+                    <li><a href="member-payments.html"><i class="fas fa-credit-card"></i> Payments</a></li>
+                    <li><a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a></li>
+                    <li><a href="photos.html"><i class="fas fa-images"></i> Photos</a></li>
+                    <li><a href="about-us.html"><i class="fas fa-info-circle"></i> About Us</a></li>
+                    <li><a href="member-profile.html" class="active"><i class="fas fa-user"></i> Profile</a></li>
+                    <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <div class="hamburger" id="hamburger">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <img src="3nwp2q1ufj.png" alt="Flash Running Club Logo" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: middle; animation: logo-flash 2s infinite;">
+                    <span style="font-size: 0.9rem; white-space: nowrap; font-weight: bold;">Flash Running Club</span>
+                </div>
+            </div>
+
+            <div class="content-header">
+                <h2>My Profile</h2>
+                <p>View and update your profile information</p>
+            </div>
+            
+            <div id="notification" class="notification"></div>
+            
+            <div class="profile-section">
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar" id="profileAvatar">
+                            <i class="fas fa-user"></i>
+                            <div class="avatar-upload" id="avatarUpload">
+                                <i class="fas fa-camera"></i> Change
+                            </div>
+                            <input type="file" id="profilePhotoInput" accept="image/*">
+                        </div>
+                        <div class="profile-info">
+                            <div class="profile-name" id="profileName">Loading...</div>
+                            <div class="profile-email" id="memberSince">Member since: Loading...</div>
+                            <div class="profile-status">
+                                <span class="badge" style="background-color: #28a745; color: white; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem;">
+                                    <i class="fas fa-check-circle"></i> Active Member
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Running Times Section -->
+            <div class="card mt-20">
+                <div class="card-header">
+                    <h3 class="card-title">My Running Times</h3>
+                </div>
+                <div class="card-body">
+                    <p>Track your personal best running times for different distances.</p>
+                    
+                    <!-- Road Events -->
+                    <h4 style="margin: 20px 0 10px; color: #333;">Road Events</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                        <div class="time-card" style="background: #f9f9f9; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #ddd;">
+                            <div style="font-weight: bold; color: #333; margin-bottom: 5px;">1.5 Mile</div>
+                            <div id="time-1.5mile" style="font-size: 1.2rem; color: #facc15; margin-bottom: 10px;">Not set</div>
+                            <button onclick="updateRunningTime('1.5mile')" class="btn btn-sm" style="background-color: #facc15; color: #000; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Set Time</button>
+                        </div>
+                        <div class="time-card" style="background: #f9f9f9; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #ddd;">
+                            <div style="font-weight: bold; color: #333; margin-bottom: 5px;">2 Miles</div>
+                            <div id="time-2miles" style="font-size: 1.2rem; color: #facc15; margin-bottom: 10px;">Not set</div>
+                            <button onclick="updateRunningTime('2miles')" class="btn btn-sm" style="background-color: #facc15; color: #000; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Set Time</button>
+                        </div>
+                        <div class="time-card" style="background: #f9f9f9; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #ddd;">
+                            <div style="font-weight: bold; color: #333; margin-bottom: 5px;">5km</div>
+                            <div id="time-5km" style="font-size: 1.2rem; color: #facc15; margin-bottom: 10px;">Not set</div>
+                            <button onclick="updateRunningTime('5km')" class="btn btn-sm" style="background-color: #facc15; color: #000; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Set Time</button>
+                        </div>
+                        <div class="time-card" style="background: #f9f9f9; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #ddd;">
+                            <div style="font-weight: bold; color: #333; margin-bottom: 5px;">10km</div>
+                            <div id="time-10km" style="font-size: 1.2rem; color: #facc15; margin-bottom: 10px;">Not set</div>
+                            <button onclick="updateRunningTime('10km')" class="btn btn-sm" style="background-color: #facc15; color: #000; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Set Time</button>
+                        </div>
+                        <div class="time-card" style="background: #f9f9f9; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #ddd;">
+                            <div style="font-weight: bold; color: #333; margin-bottom: 5px;">21km</div>
+                            <div id="time-21km" style="font-size: 1.2rem; color: #facc15; margin-bottom: 10px;">Not set</div>
+                            <button onclick="updateRunningTime('21km')" class="btn btn-sm" style="background-color: #facc15; color: #000; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Set Time</button>
+                        </div>
+                        <div class="time-card" style="background: #f9f9f9; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #ddd;">
+                            <div style="font-weight: bold; color: #333; margin-bottom: 5px;">42km</div>
+                            <div id="time-42km" style="font-size: 1.2rem; color: #facc15; margin-bottom: 10px;">Not set</div>
+                            <button onclick="updateRunningTime('42km')" class="btn btn-sm" style="background-color: #facc15; color: #000; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Set Time</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Track Events -->
+                    <h4 style="margin: 20px 0 10px; color: #333;">Track Events</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div class="time-card" style="background: #f9f9f9; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #ddd;">
+                            <div style="font-weight: bold; color: #333; margin-bottom: 5px;">1500m</div>
+                            <div id="time-1500m" style="font-size: 1.2rem; color: #facc15; margin-bottom: 10px;">Not set</div>
+                            <button onclick="updateRunningTime('1500m')" class="btn btn-sm" style="background-color: #facc15; color: #000; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Set Time</button>
+                        </div>
+                        <div class="time-card" style="background: #f9f9f9; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #ddd;">
+                            <div style="font-weight: bold; color: #333; margin-bottom: 5px;">5000m</div>
+                            <div id="time-5000m" style="font-size: 1.2rem; color: #facc15; margin-bottom: 10px;">Not set</div>
+                            <button onclick="updateRunningTime('5000m')" class="btn btn-sm" style="background-color: #facc15; color: #000; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Set Time</button>
+                        </div>
+                        <div class="time-card" style="background: #f9f9f9; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #ddd;">
+                            <div style="font-weight: bold; color: #333; margin-bottom: 5px;">10000m</div>
+                            <div id="time-10000m" style="font-size: 1.2rem; color: #facc15; margin-bottom: 10px;">Not set</div>
+                            <button onclick="updateRunningTime('10000m')" class="btn btn-sm" style="background-color: #facc15; color: #000; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Set Time</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-20">
+                <div class="card-header">
+                    <h3 class="card-title">Personal Information</h3>
+                </div>
+                <div class="card-body">
+                    <form id="profileForm">
+                        <div class="form-group">
+                            <label for="fullName">Full Name</label>
+                            <input type="text" id="fullName" class="form-control readonly-field" placeholder="Your full name" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" class="form-control" placeholder="your.email@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" class="form-control" placeholder="Your phone number" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="emergencyContact">Emergency Contact Number</label>
+                            <input type="tel" id="emergencyContact" class="form-control" placeholder="Emergency contact number" required>
+                        </div>
+                        <div class="form-group">
+                            <p class="text-muted" style="font-size: 0.9rem; margin-bottom: 15px;">
+                                <i class="fas fa-info-circle"></i> Note: Your password is managed by the admin. Please contact them if you need to change it.
+                            </p>
+                            <button type="submit" class="btn-update">Update Profile</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/members.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in as member
+            if (localStorage.getItem('userType') !== 'member' || !localStorage.getItem('username')) {
+                window.location.href = 'member-login.html';
+                return;
+            }
+
+            const username = localStorage.getItem('username');
+            
+            // Logout functionality
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                logout();
+            });
+            
+            // Load member profile
+            loadMemberProfile(username);
+            
+            // Load running times
+            loadRunningTimes(username);
+            
+            // Profile form submission
+            document.getElementById('profileForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                updateProfile(username);
+            });
+            
+            // Profile photo upload - use a separate function to avoid issues with multiple listeners
+            function setupPhotoUploadListeners() {
+                document.getElementById('avatarUpload').addEventListener('click', function() {
+                    document.getElementById('profilePhotoInput').click();
+                });
+                
+                document.getElementById('profilePhotoInput').addEventListener('change', function(e) {
+                    if (e.target.files && e.target.files[0]) {
+                        uploadProfilePhoto(e.target.files[0], username);
+                    }
+                });
+            }
+            
+            // Set up the initial listeners
+            setupPhotoUploadListeners();
+        });
+        
+        // Function to load member profile
+        function loadMemberProfile(username) {
+            // Get member data from storage
+            const members = getAllMembers();
+            const member = members.find(m => m.username === username);
+            
+            if (!member) {
+                showNotification('Failed to load profile data', 'error');
+                return;
+            }
+            
+            // Update profile header
+            document.getElementById('profileName').textContent = member.username;
+            
+            // Update sidebar member name and avatar
+            let displayName = username;
+            if (member.firstName) {
+                if (member.middleName) {
+                    displayName = `${member.firstName} ${member.middleName}`;
+                } else if (member.lastName) {
+                    displayName = `${member.firstName} ${member.lastName}`;
+                } else {
+                    displayName = member.firstName;
+                }
+            }
+            document.getElementById('sidebarMemberName').textContent = displayName;
+            
+            // Set avatar in sidebar
+            const sidebarAvatar = document.getElementById('sidebarAvatar');
+            if (member.profilePhoto) {
+                sidebarAvatar.innerHTML = `<img src="${member.profilePhoto}" alt="${username}" style="width: 100%; height: 100%; object-fit: cover;">`;
+            } else {
+                const initial = member.firstName ? member.firstName.charAt(0).toUpperCase() : username.charAt(0).toUpperCase();
+                sidebarAvatar.innerHTML = `<div style="position: absolute; top: 0; left: 0; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">${initial}</div>`;
+            }
+            
+            // Set profile photo or initials
+            const profileAvatar = document.getElementById('profileAvatar');
+            if (member.profilePhoto) {
+                profileAvatar.innerHTML = `
+                    <img src="${member.profilePhoto}" alt="${member.username}">
+                    <div class="avatar-upload" id="avatarUpload">
+                        <i class="fas fa-camera"></i> Change
+                    </div>
+                    <input type="file" id="profilePhotoInput" accept="image/*">
+                `;
+            } else {
+                // Set initials for avatar
+                const initials = username.charAt(0).toUpperCase();
+                profileAvatar.innerHTML = `
+                    <div style="font-size: 3rem; color: #333;">${initials}</div>
+                    <div class="avatar-upload" id="avatarUpload">
+                        <i class="fas fa-camera"></i> Change
+                    </div>
+                    <input type="file" id="profilePhotoInput" accept="image/*">
+                `;
+            }
+            
+            // Set member since date from admin-provided join date
+            if (member.joinDate) {
+                const joinDate = new Date(member.joinDate);
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                document.getElementById('memberSince').textContent = `Member since: ${joinDate.toLocaleDateString('en-US', options)}`;
+            } else {
+                document.getElementById('memberSince').textContent = 'Member since: Not specified';
+            }
+            
+            // Set form fields
+            document.getElementById('fullName').value = member.username;
+            document.getElementById('email').value = member.email || '';
+            document.getElementById('phone').value = member.phone || '';
+            document.getElementById('emergencyContact').value = member.emergencyContact || '';
+            
+            // Re-attach event listeners for photo upload
+            document.getElementById('avatarUpload').addEventListener('click', function() {
+                document.getElementById('profilePhotoInput').click();
+            });
+            
+            // Re-attach file input change event listener
+            document.getElementById('profilePhotoInput').addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    uploadProfilePhoto(e.target.files[0], username);
+                }
+            });
+        }
+        
+        // Function to load running times
+        function loadRunningTimes(username) {
+            // Get member data from storage
+            const members = getAllMembers();
+            const member = members.find(m => m.username === username);
+            
+            if (!member) {
+                return;
+            }
+            
+            // Initialize running times if not exist
+            if (!member.runningTimes) {
+                member.runningTimes = {
+                    '1.5mile': { time: '', date: '' },
+                    '2miles': { time: '', date: '' },
+                    '5km': { time: '', date: '' },
+                    '10km': { time: '', date: '' },
+                    '21km': { time: '', date: '' },
+                    '42km': { time: '', date: '' },
+                    '1500m': { time: '', date: '' },
+                    '5000m': { time: '', date: '' },
+                    '10000m': { time: '', date: '' }
+                };
+                // Save to localStorage
+                localStorage.setItem('memberDb', JSON.stringify(members));
+            }
+            
+            // Update time display for each distance
+            for (const distance in member.runningTimes) {
+                const timeElement = document.getElementById(`time-${distance}`);
+                if (timeElement) {
+                    timeElement.textContent = member.runningTimes[distance].time || 'Not set';
+                }
+            }
+            
+            // This code is no longer needed since we switched to the card-based interface
+        }
+        
+        // Function to update running time
+        function updateRunningTime(distance) {
+            const username = localStorage.getItem('username');
+            if (!username) return;
+            
+            // Get current time from the element
+            const timeElement = document.getElementById(`time-${distance}`);
+            const currentTime = timeElement.textContent !== 'Not set' ? timeElement.textContent : '00:00:00';
+            
+            // Prompt for new time
+            const newTime = prompt(`Enter your best time for ${distance}:`, currentTime);
+            
+            if (newTime === null) return; // User cancelled
+            
+            // Validate time format (basic validation)
+            const timeRegex = /^(\d{1,2}:)?(\d{1,2}:)?\d{1,2}$/;
+            if (!timeRegex.test(newTime.trim())) {
+                alert('Please enter a valid time in format [hh:]mm:ss');
+                return;
+            }
+            
+            // Get member data
+            const members = getAllMembers();
+            const member = members.find(m => m.username === username);
+            
+            if (!member) return;
+            
+            // Initialize running times if not exist
+            if (!member.runningTimes) {
+                member.runningTimes = {
+                    '1.5mile': { time: '', date: '' },
+                    '2miles': { time: '', date: '' },
+                    '5km': { time: '', date: '' },
+                    '10km': { time: '', date: '' },
+                    '21km': { time: '', date: '' },
+                    '42km': { time: '', date: '' },
+                    '1500m': { time: '', date: '' },
+                    '5000m': { time: '', date: '' },
+                    '10000m': { time: '', date: '' }
+                };
+            }
+            
+            // Update time and date
+            member.runningTimes[distance] = {
+                time: newTime.trim(),
+                date: new Date().toISOString()
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('memberDb', JSON.stringify(members));
+            
+            // Update display
+            timeElement.textContent = newTime.trim();
+            
+            // Show success notification
+            alert(`${distance} time updated successfully!`);
+        }
+        
+        // Function to save running time
+        function saveRunningTime(username, distance) {
+            const newTime = document.getElementById(`input-${distance}-time`).value.trim();
+            
+            // Basic validation for time format (mm:ss or h:mm:ss)
+            const timePattern = /^(\d+:)?[0-5]?\d:[0-5]\d$/;
+            if (newTime && !timePattern.test(newTime)) {
+                alert('Please enter a valid time format (mm:ss or h:mm:ss)');
+                return;
+            }
+            
+            // Get member data
+            const members = getAllMembers();
+            const memberIndex = members.findIndex(m => m.username === username);
+            
+            if (memberIndex === -1) {
+                showNotification('Member not found', 'error');
+                return;
+            }
+            
+            // Initialize running times if not exist
+            if (!members[memberIndex].runningTimes) {
+                members[memberIndex].runningTimes = {};
+            }
+            
+            // Update time (without date)
+            members[memberIndex].runningTimes[distance] = {
+                time: newTime || '',
+                date: ''
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('memberDb', JSON.stringify(members));
+            
+            // Reload running times
+            loadRunningTimes(username);
+            
+            showNotification(`${distance} time updated successfully!`, 'success');
+        }
+        
+        // Function to update profile
+        function updateProfile(username) {
+            // Get current members data
+            const members = getAllMembers();
+            const memberIndex = members.findIndex(m => m.username === username);
+            
+            if (memberIndex === -1) {
+                showNotification('Member not found', 'error');
+                return;
+            }
+            
+            // Get updated fields
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const emergencyContact = document.getElementById('emergencyContact').value.trim();
+            
+            // Update member data
+            members[memberIndex].email = email;
+            members[memberIndex].phone = phone;
+            members[memberIndex].emergencyContact = emergencyContact;
+            
+            // Save back to localStorage
+            localStorage.setItem('memberDb', JSON.stringify(members));
+            
+            showNotification('Profile updated successfully!', 'success');
+        }
+        
+        // Function to upload profile photo
+        function uploadProfilePhoto(file, username) {
+            if (!file) return;
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const dataUrl = e.target.result;
+                
+                // Update member data with photo
+                const members = getAllMembers();
+                const memberIndex = members.findIndex(m => m.username === username);
+                
+                if (memberIndex !== -1) {
+                    members[memberIndex].profilePhoto = dataUrl;
+                    localStorage.setItem('memberDb', JSON.stringify(members));
+                    
+                    // Update profile avatar in UI
+                    document.getElementById('profileAvatar').innerHTML = `
+                        <img src="${dataUrl}" alt="${username}" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div class="avatar-upload" id="avatarUpload">
+                            <i class="fas fa-camera"></i> Change
+                        </div>
+                        <input type="file" id="profilePhotoInput" accept="image/*">
+                    `;
+                    
+                    // Also update sidebar avatar
+                    document.getElementById('sidebarAvatar').innerHTML = `<img src="${dataUrl}" alt="${username}" style="position: absolute; top: 0; left: 0; width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">`;
+                    
+                    // Re-attach event listeners using our setup function
+                    setupPhotoUploadListeners();
+                    
+                    showNotification('Profile photo updated!', 'success');
+                }
+            };
+            
+            reader.readAsDataURL(file);
+        }
+        
+        // Function to show notification
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification notification-${type}`;
+            notification.style.display = 'block';
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

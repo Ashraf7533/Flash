@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flash Running Club - Export/Import Data</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard">
+        <div class="main-content">
+            <div class="content-header">
+                <h2>Data Management</h2>
+                <p>Export and import your club data</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Export Data</h3>
+                </div>
+                <div class="card-body">
+                    <p>Download all your club data as a backup file:</p>
+                    <button onclick="exportData()" class="btn btn-primary">
+                        <i class="fas fa-download"></i> Export All Data
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Import Data</h3>
+                </div>
+                <div class="card-body">
+                    <p>Upload a previously exported data file:</p>
+                    <input type="file" id="importFile" accept=".json" class="form-control">
+                    <button onclick="importData()" class="btn btn-success" style="margin-top: 10px;">
+                        <i class="fas fa-upload"></i> Import Data
+                    </button>
+                    <div id="importResult" style="margin-top: 10px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function exportData() {
+            const allData = {
+                memberDb: JSON.parse(localStorage.getItem('memberDb') || '[]'),
+                trainings: JSON.parse(localStorage.getItem('trainings') || '{}'),
+                membersPayments: JSON.parse(localStorage.getItem('membersPayments') || '{}'),
+                exportDate: new Date().toISOString()
+            };
+
+            const dataStr = JSON.stringify(allData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `flash-running-club-data-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+        }
+
+        function importData() {
+            const file = document.getElementById('importFile').files[0];
+            const resultDiv = document.getElementById('importResult');
+            
+            if (!file) {
+                resultDiv.innerHTML = '<div style="color: red;">Please select a file first.</div>';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (data.memberDb) localStorage.setItem('memberDb', JSON.stringify(data.memberDb));
+                    if (data.trainings) localStorage.setItem('trainings', JSON.stringify(data.trainings));
+                    if (data.membersPayments) localStorage.setItem('membersPayments', JSON.stringify(data.membersPayments));
+                    
+                    resultDiv.innerHTML = '<div style="color: green;">Data imported successfully!</div>';
+                } catch (error) {
+                    resultDiv.innerHTML = '<div style="color: red;">Error: Invalid file format.</div>';
+                }
+            };
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>

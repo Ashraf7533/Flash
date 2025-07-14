@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Login - Flash Running Club</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="login-container" style="height: 100vh; overflow-y: auto;">
+        <div class="form-container login-form">
+            <div class="text-center mb-20">
+                <img src="3nwp2q1ufj.png" alt="Flash Running Club Logo" style="height: 80px;">
+            </div>
+            <h1>Member Login</h1>
+            <div id="memberImageContainer" class="text-center" style="margin-bottom: 20px; display: none;">
+                <div id="memberAvatar" style="width: 90px; height: 90px; background-color: #f0f0f0; display: inline-flex; align-items: center; justify-content: center; font-size: 2.2rem; color: #666; margin-bottom: 10px; position: relative; box-sizing: border-box; border-radius: 50%; overflow: hidden; border: 3px solid #facc15; box-shadow: 0 3px 5px rgba(0,0,0,0.2);"></div>
+                <div id="memberName" style="font-weight: bold; font-size: 1.2rem;"></div>
+            </div>
+            <form id="memberLoginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+                </div>
+                <div id="loginError" class="text-center" style="color: red; margin-top: 15px; display: none;">
+                    Invalid username or password
+                </div>
+            </form>
+            <div class="text-center mt-20">
+                <a href="index.html">Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Member login page loaded');
+            // Check if user is already logged in
+            const userType = localStorage.getItem('userType');
+            const username = localStorage.getItem('username');
+            const sessionId = localStorage.getItem('currentSessionId');
+            
+            console.log('Auth check - Type:', userType, 'Username:', username, 'Session:', sessionId);
+            
+            if (userType === 'member' && username && sessionId) {
+                console.log('User already logged in, redirecting to dashboard');
+                window.location.href = 'member-dashboard.html';
+                return;
+            }
+
+            // Check if there are pending credentials from admin verification
+            const pendingUsername = sessionStorage.getItem('pendingUsername');
+            const pendingPassword = sessionStorage.getItem('pendingPassword');
+            
+            if (pendingUsername && pendingPassword) {
+                // Auto-fill the credentials
+                document.getElementById('username').value = pendingUsername;
+                document.getElementById('password').value = pendingPassword;
+                
+                // Clear the pending credentials
+                sessionStorage.removeItem('pendingUsername');
+                sessionStorage.removeItem('pendingPassword');
+            }
+
+            const loginForm = document.getElementById('memberLoginForm');
+            const loginError = document.getElementById('loginError');
+
+            // Username input event handler to check if member exists and show photo/name
+            document.getElementById('username').addEventListener('input', function(e) {
+                const username = e.target.value.trim();
+                if (username.length > 2) {
+                    displayMemberInfo(username);
+                } else {
+                    document.getElementById('memberImageContainer').style.display = 'none';
+                }
+            });
+            
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                loginAsMember(username, password);
+            });
+            
+            // Function to display member profile image and name
+            function displayMemberInfo(username) {
+                try {
+                    const members = JSON.parse(localStorage.getItem('memberDb')) || [];
+                    const member = members.find(m => m.username.toLowerCase() === username.toLowerCase());
+                    
+                    if (member) {
+                        const memberAvatar = document.getElementById('memberAvatar');
+                        const memberName = document.getElementById('memberName');
+                        const memberImageContainer = document.getElementById('memberImageContainer');
+                        
+                        // Show the container
+                        memberImageContainer.style.display = 'block';
+                        
+                        // Set name based on available fields
+                        let displayName = username;
+                        if (member.fullName) {
+                            displayName = member.fullName;
+                        }
+                        memberName.textContent = displayName;
+                        
+                        // Set avatar image or initials
+                        if (member.profilePhoto) {
+                            memberAvatar.innerHTML = `<img src="${member.profilePhoto}" alt="${username}" style="width: 100%; height: 100%; object-fit: cover;">`;
+                        } else {
+                            const initial = member.fullName ? member.fullName.charAt(0).toUpperCase() : username.charAt(0).toUpperCase();
+                            memberAvatar.innerHTML = `<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">${initial}</div>`;
+                        }
+                    } else {
+                        document.getElementById('memberImageContainer').style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Error displaying member info:', error);
+                    document.getElementById('memberImageContainer').style.display = 'none';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

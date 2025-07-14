@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Flash Running Club</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Mobile responsive styles handled with inline styles for consistency */
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header" style="background-color: #facc15; display: flex; align-items: center; padding: 15px;">
+                <div class="sidebar-logo" style="display: flex; align-items: center; flex: 1;">
+                    <img src="3nwp2q1ufj.png" alt="Flash Running Club Logo" style="width: 30px; height: 30px; margin-right: 10px; vertical-align: middle; animation: logo-flash 2s infinite; border-radius: 50%;">
+                    <span style="font-weight: bold; font-size: 1rem; color: #000;">Admin Panel</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle" style="background: none; border: none; color: #000; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="admin-dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="members.html"><i class="fas fa-users"></i> All Members</a></li>
+                    <li><a href="add-member.html"><i class="fas fa-user-plus"></i> Add Member</a></li>
+                    <li><a href="training.html"><i class="fas fa-running"></i> Trainings</a></li>
+                    <li><a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a></li>
+                    <li><a href="payments.html"><i class="fas fa-credit-card"></i> Payments</a></li>
+                    <li><a href="photos.html"><i class="fas fa-images"></i> Photos</a></li>
+                    <li><a href="about-us.html"><i class="fas fa-info-circle"></i> About Us</a></li>
+                    <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <div class="hamburger" id="hamburger">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div>
+                    <img src="3nwp2q1ufj.png" alt="Flash Running Club Logo" style="width: 24px; height: 24px; margin-right: 5px; vertical-align: middle; animation: logo-flash 2s infinite;">
+                    <span style="font-size: 0.8rem; white-space: nowrap; font-weight: bold;">Flash Running Club</span>
+                </div>
+            </div>
+
+            <div class="content-header">
+                <h2>Dashboard</h2>
+                <p>Overview of Flash Running Club</p>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="stats-container" style="margin-bottom: 15px;">
+                <!-- First row: Members & Active Trainings -->
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <div class="stat-card" style="flex: 1; width: calc(50% - 5px); background-color: white; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 10px; text-align: center;">
+                        <div class="stat-icon" style="font-size: 1.2rem; color: #000; margin-bottom: 5px;"><i class="fas fa-users"></i></div>
+                        <div class="stat-value" id="memberCount" style="font-size: 1.4rem; font-weight: bold; color: #facc15; margin: 5px 0;">0</div>
+                        <div class="stat-label" style="color: #666; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Total Members</div>
+                    </div>
+                    
+                    <div class="stat-card" style="flex: 1; width: calc(50% - 5px); background-color: white; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 10px; text-align: center;">
+                        <div class="stat-icon" style="font-size: 1.2rem; color: #000; margin-bottom: 5px;"><i class="fas fa-running"></i></div>
+                        <div class="stat-value" id="currentTrainingsCount" style="font-size: 1.4rem; font-weight: bold; color: #facc15; margin: 5px 0;">0</div>
+                        <div class="stat-label" style="color: #666; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Active Trainings</div>
+                    </div>
+                </div>
+                
+                <!-- Second row: Completed & Total Trainings -->
+                <div style="display: flex; gap: 10px;">
+                    <div class="stat-card" style="flex: 1; width: calc(50% - 5px); background-color: white; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 10px; text-align: center;">
+                        <div class="stat-icon" style="font-size: 1.2rem; color: #000; margin-bottom: 5px;"><i class="fas fa-check-circle"></i></div>
+                        <div class="stat-value" id="completedTrainingsCount" style="font-size: 1.4rem; font-weight: bold; color: #facc15; margin: 5px 0;">0</div>
+                        <div class="stat-label" style="color: #666; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Completed Trainings</div>
+                    </div>
+                    
+                    <div class="stat-card" style="flex: 1; width: calc(50% - 5px); background-color: white; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 10px; text-align: center;">
+                        <div class="stat-icon" style="font-size: 1.2rem; color: #000; margin-bottom: 5px;"><i class="fas fa-calendar-check"></i></div>
+                        <div class="stat-value" id="totalTrainingsCount" style="font-size: 1.4rem; font-weight: bold; color: #facc15; margin: 5px 0;">0</div>
+                        <div class="stat-label" style="color: #666; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Total Trainings</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Quick Actions</h3>
+                </div>
+                <div class="card-body">
+                    <div style="display: flex; justify-content: center; gap: 10px;">
+                        <a href="add-member.html" class="btn btn-primary" style="padding: 10px; font-size: 0.85rem; width: 130px; height: 90px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; white-space: nowrap;">
+                            <i class="fas fa-user-plus" style="font-size: 1.6rem; margin-bottom: 8px;"></i>
+                            <span>Add Member</span>
+                        </a>
+                        <a href="members.html" class="btn btn-primary" style="padding: 10px; font-size: 0.85rem; width: 130px; height: 90px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; white-space: nowrap;">
+                            <i class="fas fa-users" style="font-size: 1.6rem; margin-bottom: 8px;"></i>
+                            <span>All Members</span>
+                        </a>
+                        <a href="training.html" class="btn btn-secondary" style="padding: 10px; font-size: 0.85rem; width: 130px; height: 90px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; white-space: nowrap;">
+                            <i class="fas fa-tasks" style="font-size: 1.6rem; margin-bottom: 8px;"></i>
+                            <span>Training</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Member Activities -->
+            <div class="card mt-20">
+                <div class="card-header">
+                    <h3 class="card-title">Member Training Status</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Member</th>
+                                    <th>Current Trainings</th>
+                                    <th>Morning Sessions</th>
+                                    <th>Evening Sessions</th>
+                                    <th>Incomplete Trainings</th>
+                                    <th>Completed Trainings</th>
+                                </tr>
+                            </thead>
+                            <tbody id="memberStatusTable">
+                                <tr>
+                                    <td colspan="4" class="text-center">Loading member data...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in as admin
+            if (localStorage.getItem('userType') !== 'admin' || localStorage.getItem('username') !== 'FlashRC12') {
+                window.location.href = 'admin-login.html';
+                return;
+            }
+
+            // Logout functionality
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                logout();
+            });
+
+            // Load dashboard statistics
+            loadDashboardStats();
+            
+            // Load member status table
+            loadMemberStatusTable();
+        });
+
+        function loadDashboardStats() {
+            const stats = getAdminStats();
+            
+            document.getElementById('memberCount').textContent = stats.memberCount;
+            document.getElementById('currentTrainingsCount').textContent = stats.currentTrainingsCount;
+            document.getElementById('completedTrainingsCount').textContent = stats.completedTrainingsCount;
+            document.getElementById('totalTrainingsCount').textContent = stats.totalTrainingsCount;
+        }
+        
+        function loadMemberStatusTable() {
+            const memberStatusTable = document.getElementById('memberStatusTable');
+            const membersWithTrainings = getAllMembersWithTrainings();
+            
+            if (membersWithTrainings.length === 0) {
+                memberStatusTable.innerHTML = '<tr><td colspan="3" class="text-center">No members found</td></tr>';
+                return;
+            }
+            
+            memberStatusTable.innerHTML = '';
+            
+            membersWithTrainings.forEach(member => {
+                // Count completed morning and evening sessions
+                let completedMorning = 0;
+                let completedEvening = 0;
+                
+                member.currentTrainings.forEach(training => {
+                    if (training.morningSession && training.morningSession.completed) {
+                        completedMorning++;
+                    }
+                    if (training.eveningSession && training.eveningSession.completed) {
+                        completedEvening++;
+                    }
+                });
+                
+                // Count total assigned sessions
+                // Total morning sessions (current + past)
+                let totalMorningSessions = member.currentTrainings.filter(t => t.morningSession).length + 
+                                          member.pastTrainings.filter(t => t.morningSession).length;
+                
+                // Total evening sessions (current + past)               
+                let totalEveningSessions = member.currentTrainings.filter(t => t.eveningSession).length + 
+                                          member.pastTrainings.filter(t => t.eveningSession).length;
+                
+                // For incomplete calculation, we need current counts
+                let totalMorningInCurrent = member.currentTrainings.filter(t => t.morningSession).length;
+                let totalEveningInCurrent = member.currentTrainings.filter(t => t.eveningSession).length;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${member.username}</td>
+                    <td>${member.currentTrainings.length}</td>
+                    <td>${totalMorningSessions}</td>
+                    <td>${totalEveningSessions}</td>
+                    <td>
+                    ${(() => {
+                        // Count incomplete sessions in current trainings
+                        let incompleteMorning = totalMorningInCurrent - completedMorning;
+                        let incompleteEvening = totalEveningInCurrent - completedEvening;
+                        
+                        // Count incomplete sessions in past trainings
+                        let incompleteMorningPast = 0;
+                        let incompleteEveningPast = 0;
+                        let autoMarkedIncompleteMorning = 0;
+                        let autoMarkedIncompleteEvening = 0;
+                        
+                        member.pastTrainings.forEach(training => {
+                            if (training.morningSession && !training.morningSession.completed) {
+                                incompleteMorningPast++;
+                                // Count auto-marked incomplete sessions
+                                if (training.morningSession.autoMarkedIncomplete) {
+                                    autoMarkedIncompleteMorning++;
+                                }
+                            }
+                            if (training.eveningSession && !training.eveningSession.completed) {
+                                incompleteEveningPast++;
+                                // Count auto-marked incomplete sessions
+                                if (training.eveningSession.autoMarkedIncomplete) {
+                                    autoMarkedIncompleteEvening++;
+                                }
+                            }
+                        });
+                        
+                        const totalIncompleteMorning = incompleteMorning + incompleteMorningPast;
+                        const totalIncompleteEvening = incompleteEvening + incompleteEveningPast;
+                        const totalIncomplete = totalIncompleteMorning + totalIncompleteEvening;
+                        const autoTotal = autoMarkedIncompleteMorning + autoMarkedIncompleteEvening;
+                        
+                        // Add indication of auto-marked incomplete sessions if any
+                        if (autoTotal > 0) {
+                            return `${totalIncomplete} (M${totalIncompleteMorning}/E${totalIncompleteEvening}) <span title="Auto-marked incomplete after 3 days" style="color: #dc3545; cursor: help;">[${autoTotal} auto]</span>`;
+                        } else {
+                            return `${totalIncomplete} (M${totalIncompleteMorning}/E${totalIncompleteEvening})`;
+                        }
+                    })()}
+                    </td>
+                    <td>
+                    ${(() => {
+                        // Count completed sessions in past trainings
+                        let completedMorningPast = 0;
+                        let completedEveningPast = 0;
+                        
+                        member.pastTrainings.forEach(training => {
+                            if (training.morningSession && training.morningSession.completed) {
+                                completedMorningPast++;
+                            }
+                            if (training.eveningSession && training.eveningSession.completed) {
+                                completedEveningPast++;
+                            }
+                        });
+                        
+                        // Add completed sessions from current trainings
+                        const totalCompletedMorning = completedMorning + completedMorningPast;
+                        const totalCompletedEvening = completedEvening + completedEveningPast;
+                        const totalCompleted = totalCompletedMorning + totalCompletedEvening;
+                        
+                        return `${totalCompleted} (M${totalCompletedMorning}/E${totalCompletedEvening})`;
+                    })()}
+                    </td>
+                `;
+                memberStatusTable.appendChild(row);
+            });
+        }
+    </script>
+</body>
+</html>

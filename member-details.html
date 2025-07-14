@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Details - Flash Running Club</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .member-profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .profile-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            margin-bottom: 15px;
+            border: 3px solid #facc15;
+        }
+        
+        .member-details {
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .detail-row {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            padding: 12px 0;
+        }
+        
+        .detail-label {
+            width: 40%;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .detail-value {
+            width: 60%;
+        }
+        
+        .section-title {
+            margin: 25px 0 15px;
+            font-size: 1.3rem;
+            color: #000;
+            font-weight: bold;
+            border-bottom: 2px solid #facc15;
+            padding-bottom: 5px;
+        }
+        
+        .training-card {
+            background-color: #f9f9f9;
+            border-left: 4px solid #facc15;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 3px;
+        }
+        
+        .training-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .training-session {
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: #fff;
+            border-radius: 4px;
+        }
+        
+        .session-completed {
+            border-left: 4px solid #28a745;
+        }
+        
+        .session-pending {
+            border-left: 4px solid #dc3545;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .badge-success {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .badge-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .badge-warning {
+            background-color: #facc15;
+            color: #000;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        @media screen and (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .detail-row {
+                flex-direction: column;
+            }
+            
+            .detail-label, .detail-value {
+                width: 100%;
+            }
+            
+            .detail-value {
+                margin-top: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header" style="background-color: #facc15; display: flex; align-items: center; padding: 15px;">
+                <div class="sidebar-logo" style="display: flex; align-items: center; flex: 1;">
+                    <img src="3nwp2q1ufj.png" alt="Flash Running Club Logo" style="width: 30px; height: 30px; margin-right: 10px; vertical-align: middle; animation: logo-flash 2s infinite; border-radius: 50%;">
+                    <span style="font-weight: bold; font-size: 1rem; color: #000;">Admin Panel</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle" style="background: none; border: none; color: #000; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="admin-dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="members.html" class="active"><i class="fas fa-users"></i> All Members</a></li>
+                    <li><a href="add-member.html"><i class="fas fa-user-plus"></i> Add Member</a></li>
+                    <li><a href="training.html"><i class="fas fa-running"></i> Trainings</a></li>
+                    <li><a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a></li>
+                    <li><a href="payments.html"><i class="fas fa-credit-card"></i> Payments</a></li>
+                    <li><a href="photos.html"><i class="fas fa-images"></i> Photos</a></li>
+                    <li><a href="about-us.html"><i class="fas fa-info-circle"></i> About Us</a></li>
+                    <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <div class="hamburger" id="hamburger">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div>
+                    <img src="3nwp2q1ufj.png" alt="Flash Running Club Logo" style="width: 24px; height: 24px; margin-right: 5px; vertical-align: middle; animation: logo-flash 2s infinite;">
+                    <span style="font-size: 0.8rem; white-space: nowrap; font-weight: bold;">Flash Running Club</span>
+                </div>
+            </div>
+
+            <div class="content-header">
+                <h2>Member Details</h2>
+                <p><a href="members.html"><i class="fas fa-arrow-left"></i> Back to All Members</a></p>
+            </div>
+
+            <!-- Member Profile -->
+            <div class="card">
+                <div class="member-profile">
+                    <div class="profile-image" id="memberProfileImage">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h2 id="memberName">Loading...</h2>
+                </div>
+                
+                <div class="card-body">
+                    <h3 class="section-title">Personal Information</h3>
+                    <div class="member-details" id="viewModeDetails">
+                        <div class="detail-row">
+                            <div class="detail-label">Membership ID</div>
+                            <div class="detail-value" id="memberMembershipId">Loading...</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Full Name</div>
+                            <div class="detail-value" id="memberFullName">Loading...</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Email Address</div>
+                            <div class="detail-value" id="memberEmail">Loading...</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Phone Number</div>
+                            <div class="detail-value" id="memberPhone">Loading...</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Joined Date</div>
+                            <div class="detail-value" id="memberJoinDate">Loading...</div>
+                        </div>
+                        
+                        <h3 class="section-title" style="margin-top: 20px;">Emergency Contact</h3>
+                        <div class="detail-row">
+                            <div class="detail-label">Name</div>
+                            <div class="detail-value" id="memberEmergencyContactName">Loading...</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Relationship</div>
+                            <div class="detail-value" id="memberEmergencyContactRelationship">Loading...</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Contact Number</div>
+                            <div class="detail-value" id="memberEmergencyContact">Loading...</div>
+                        </div>
+                        
+                        <h3 class="section-title" style="margin-top: 20px;">Health Information</h3>
+                        <div class="detail-row">
+                            <div class="detail-label">Health Condition</div>
+                            <div class="detail-value" id="memberHealthCondition">None specified</div>
+                        </div>
+                        
+                        <h3 class="section-title" style="margin-top: 20px;">Interested Categories</h3>
+                        <div class="detail-row">
+                            <div class="detail-label">Categories</div>
+                            <div class="detail-value" id="memberInterestedCategories">None selected</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Edit mode form (initially hidden) -->
+                    <div class="member-details" id="editModeDetails" style="display: none;">
+                        <h3 class="section-title">Personal Information</h3>
+                        <div class="detail-row">
+                            <div class="detail-label">Membership ID</div>
+                            <div class="detail-value">
+                                <input type="text" id="editMembershipId" class="form-control">
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Full Name</div>
+                            <div class="detail-value">
+                                <input type="text" id="editFullName" class="form-control">
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Username</div>
+                            <div class="detail-value">
+                                <input type="text" id="editUsername" class="form-control">
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Email Address</div>
+                            <div class="detail-value">
+                                <input type="email" id="editEmail" class="form-control">
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Phone Number</div>
+                            <div class="detail-value">
+                                <input type="tel" id="editPhone" class="form-control">
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Joined Date</div>
+                            <div class="detail-value">
+                                <input type="date" id="editJoinDate" class="form-control">
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Password</div>
+                            <div class="detail-value">
+                                <input type="password" id="editPassword" class="form-control" placeholder="Leave blank to keep current password">
+                            </div>
+                        </div>
+                        
+                        <h3 class="section-title" style="margin-top: 20px;">Emergency Contact</h3>
+                        <div class="detail-row">
+                            <div class="detail-label">Name</div>
+                            <div class="detail-value">
+                                <input type="text" id="editEmergencyContactName" class="form-control">
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Relationship</div>
+                            <div class="detail-value">
+                                <input type="text" id="editEmergencyContactRelationship" class="form-control">
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Contact Number</div>
+                            <div class="detail-value">
+                                <input type="tel" id="editEmergencyContact" class="form-control">
+                            </div>
+                        </div>
+                        
+                        <h3 class="section-title" style="margin-top: 20px;">Health Information</h3>
+                        <div class="detail-row">
+                            <div class="detail-label">Health Condition</div>
+                            <div class="detail-value">
+                                <textarea id="editHealthCondition" class="form-control" rows="3"></textarea>
+                            </div>
+                        </div>
+                        
+                        <h3 class="section-title" style="margin-top: 20px;">Interested Categories</h3>
+                        <div class="detail-row">
+                            <div class="detail-label">Road Events</div>
+                            <div class="detail-value" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                <div style="display: flex; align-items: center;">
+                                    <input type="checkbox" id="editCategory5km" name="editCategories" value="5km" style="margin-right: 5px;">
+                                    <label for="editCategory5km">5km</label>
+                                </div>
+                                <div style="display: flex; align-items: center;">
+                                    <input type="checkbox" id="editCategory10km" name="editCategories" value="10km" style="margin-right: 5px;">
+                                    <label for="editCategory10km">10km</label>
+                                </div>
+                                <div style="display: flex; align-items: center;">
+                                    <input type="checkbox" id="editCategoryHalfMarathon" name="editCategories" value="21km" style="margin-right: 5px;">
+                                    <label for="editCategoryHalfMarathon">Half Marathon</label>
+                                </div>
+                                <div style="display: flex; align-items: center;">
+                                    <input type="checkbox" id="editCategoryMarathon" name="editCategories" value="42km" style="margin-right: 5px;">
+                                    <label for="editCategoryMarathon">Marathon</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Track Events</div>
+                            <div class="detail-value" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                <div style="display: flex; align-items: center;">
+                                    <input type="checkbox" id="editCategory1500m" name="editCategories" value="1500m" style="margin-right: 5px;">
+                                    <label for="editCategory1500m">1500m</label>
+                                </div>
+                                <div style="display: flex; align-items: center;">
+                                    <input type="checkbox" id="editCategory5000m" name="editCategories" value="5000m" style="margin-right: 5px;">
+                                    <label for="editCategory5000m">5000m</label>
+                                </div>
+                                <div style="display: flex; align-items: center;">
+                                    <input type="checkbox" id="editCategory10000m" name="editCategories" value="10000m" style="margin-right: 5px;">
+                                    <label for="editCategory10000m">10000m</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="editResultMessage" style="margin-top: 10px;"></div>
+                    </div>
+                    
+                    <div class="actions" style="margin-top: 20px; text-align: center;">
+                        <!-- View mode buttons -->
+                        <div id="viewModeButtons">
+                            <button class="btn btn-primary btn-sm edit-member-btn">
+                                <i class="fas fa-edit"></i> Edit Details
+                            </button>
+                            <button class="btn btn-secondary btn-sm delete-member-btn" style="margin-left: 10px;">
+                                <i class="fas fa-trash-alt"></i> Delete Member
+                            </button>
+                        </div>
+                        
+                        <!-- Edit mode buttons (initially hidden) -->
+                        <div id="editModeButtons" style="display: none;">
+                            <button class="btn btn-success btn-sm save-changes-btn">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                            <button class="btn btn-danger btn-sm cancel-edit-btn" style="margin-left: 10px;">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Training Information -->
+            <div class="card mt-20">
+                <div class="card-header">
+                    <h3 class="card-title">Training Information</h3>
+                </div>
+                <div class="card-body">
+                    <h3 class="section-title">Training Statistics</h3>
+                    <div style="margin-bottom: 15px;">
+                        <!-- First row: Current and Assigned -->
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                            <div class="stat-card" style="flex: 1; background-color: white; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 8px; text-align: center;">
+                                <div class="stat-icon" style="font-size: 1rem; color: #000;"><i class="fas fa-running"></i></div>
+                                <div class="stat-value" id="currentTrainingCount" style="font-size: 1.2rem; font-weight: bold; color: #facc15; margin: 2px 0;">0</div>
+                                <div class="stat-label" style="color: #666; font-size: 0.7rem;">Current</div>
+                            </div>
+                            
+                            <div class="stat-card" style="flex: 1; background-color: white; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 8px; text-align: center;">
+                                <div class="stat-icon" style="font-size: 1rem; color: #000;"><i class="fas fa-calendar-plus"></i></div>
+                                <div class="stat-value" id="assignedTrainingCount" style="font-size: 1.2rem; font-weight: bold; color: #facc15; margin: 2px 0;">0</div>
+                                <div class="stat-label" style="color: #666; font-size: 0.7rem;">Assigned</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Second row: Incomplete and Complete -->
+                        <div style="display: flex; gap: 10px;">
+                            <div class="stat-card" style="flex: 1; background-color: white; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 8px; text-align: center;">
+                                <div class="stat-icon" style="font-size: 1rem; color: #000;"><i class="fas fa-times-circle"></i></div>
+                                <div class="stat-value" id="incompleteSessionCount" style="font-size: 1.2rem; font-weight: bold; color: #facc15; margin: 2px 0;">0</div>
+                                <div class="stat-label" style="color: #666; font-size: 0.7rem;">Incomplete</div>
+                            </div>
+                            
+                            <div class="stat-card" style="flex: 1; background-color: white; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 8px; text-align: center;">
+                                <div class="stat-icon" style="font-size: 1rem; color: #000;"><i class="fas fa-check-circle"></i></div>
+                                <div class="stat-value" id="completedSessionCount" style="font-size: 1.2rem; font-weight: bold; color: #facc15; margin: 2px 0;">0</div>
+                                <div class="stat-label" style="color: #666; font-size: 0.7rem;">Completed</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="section-title">Training History</h3>
+                    <div class="search-container" style="margin-bottom: 15px;">
+                        <div style="display: flex;">
+                            <input type="text" id="pastTrainingSearch" class="form-control" placeholder="Search trainings..." style="flex: 1; margin-right: 10px;">
+                            <button id="searchPastTrainingsBtn" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+                        </div>
+                    </div>
+                    <div id="pastTrainings">
+                        <p class="text-center">Loading training history...</p>
+                    </div>
+                    <div id="pastTrainingsPagination" class="text-center" style="margin-top: 15px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/members.js"></script>
+    <script src="js/training.js"></script>
+    <script>
+        // Helper function to format date
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            } catch (e) {
+                return dateString;
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in as admin
+            if (localStorage.getItem('userType') !== 'admin' || localStorage.getItem('username') !== 'FlashRC12') {
+                window.location.href = 'admin-login.html';
+                return;
+            }
+
+            // Logout functionality
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                logout();
+            });
+            
+            // Get username from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const username = urlParams.get('username');
+            
+            if (!username) {
+                window.location.href = 'members.html';
+                return;
+            }
+            
+            // Load member details
+            loadMemberDetails(username);
+            
+            // Load training information
+            loadMemberTrainings(username);
+            
+            // Training form elements removed, so these event handlers are no longer needed
+            
+            // Handle edit button
+            document.querySelector('.edit-member-btn').addEventListener('click', function() {
+                // Switch to edit mode
+                document.getElementById('viewModeDetails').style.display = 'none';
+                document.getElementById('editModeDetails').style.display = 'block';
+                document.getElementById('viewModeButtons').style.display = 'none';
+                document.getElementById('editModeButtons').style.display = 'block';
+                
+                // Fill in edit form with current values
+                const members = getAllMembers();
+                const member = members.find(m => m.username === username);
+                
+                // Personal Information
+                document.getElementById('editMembershipId').value = member.membershipId || '';
+                document.getElementById('editFullName').value = member.fullName || '';
+                document.getElementById('editUsername').value = member.username || '';
+                document.getElementById('editEmail').value = member.email || '';
+                document.getElementById('editPhone').value = member.phone || '';
+                document.getElementById('editJoinDate').value = member.joinDate || '';
+                document.getElementById('editPassword').value = '';
+                
+                // Emergency Contact
+                document.getElementById('editEmergencyContactName').value = member.emergencyContactName || '';
+                document.getElementById('editEmergencyContactRelationship').value = member.emergencyContactRelationship || '';
+                document.getElementById('editEmergencyContact').value = member.emergencyContact || '';
+                
+                // Health Information
+                document.getElementById('editHealthCondition').value = member.healthCondition || '';
+                
+                // Interested Categories
+                const categories = member.interestedCategories || [];
+                
+                // Check the appropriate checkboxes
+                document.getElementById('editCategory5km').checked = categories.includes('5km');
+                document.getElementById('editCategory10km').checked = categories.includes('10km');
+                document.getElementById('editCategoryHalfMarathon').checked = categories.includes('21km');
+                document.getElementById('editCategoryMarathon').checked = categories.includes('42km');
+                document.getElementById('editCategory1500m').checked = categories.includes('1500m');
+                document.getElementById('editCategory5000m').checked = categories.includes('5000m');
+                document.getElementById('editCategory10000m').checked = categories.includes('10000m');
+            });
+            
+            // Handle cancel button
+            document.querySelector('.cancel-edit-btn').addEventListener('click', function() {
+                // Switch back to view mode
+                document.getElementById('viewModeDetails').style.display = 'block';
+                document.getElementById('editModeDetails').style.display = 'none';
+                document.getElementById('viewModeButtons').style.display = 'block';
+                document.getElementById('editModeButtons').style.display = 'none';
+                document.getElementById('editResultMessage').innerHTML = '';
+            });
+            
+            // Clear button removed
+            
+            // Handle save changes button
+            document.querySelector('.save-changes-btn').addEventListener('click', function() {
+                if (confirm('Are you sure you want to save these changes?')) {
+                    const members = getAllMembers();
+                    const member = members.find(m => m.username === username);
+                    
+                    // Get updated values - Personal Information
+                    const updatedMembershipId = document.getElementById('editMembershipId').value.trim();
+                    const updatedFullName = document.getElementById('editFullName').value.trim();
+                    const updatedUsername = document.getElementById('editUsername').value.trim();
+                    const updatedEmail = document.getElementById('editEmail').value.trim();
+                    const updatedPhone = document.getElementById('editPhone').value.trim();
+                    const updatedJoinDate = document.getElementById('editJoinDate').value;
+                    const updatedPassword = document.getElementById('editPassword').value;
+                    
+                    // Emergency Contact Information
+                    const updatedEmergencyContactName = document.getElementById('editEmergencyContactName').value.trim();
+                    const updatedEmergencyContactRelationship = document.getElementById('editEmergencyContactRelationship').value.trim();
+                    const updatedEmergencyContact = document.getElementById('editEmergencyContact').value.trim();
+                    
+                    // Health Information
+                    const updatedHealthCondition = document.getElementById('editHealthCondition').value.trim();
+                    
+                    // Interested Categories
+                    const updatedCategories = [];
+                    const categoryCheckboxes = document.querySelectorAll('input[name="editCategories"]:checked');
+                    categoryCheckboxes.forEach(checkbox => {
+                        updatedCategories.push(checkbox.value);
+                    });
+                    
+                    // Create updated member object
+                    const updatedMember = {
+                        // Personal Information
+                        membershipId: updatedMembershipId,
+                        username: updatedUsername,
+                        fullName: updatedFullName,
+                        email: updatedEmail,
+                        phone: updatedPhone,
+                        joinDate: updatedJoinDate,
+                        password: updatedPassword ? updatedPassword : member.password,
+                        
+                        // Emergency Contact Information
+                        emergencyContactName: updatedEmergencyContactName,
+                        emergencyContactRelationship: updatedEmergencyContactRelationship,
+                        emergencyContact: updatedEmergencyContact,
+                        
+                        // Health Information
+                        healthCondition: updatedHealthCondition,
+                        
+                        // Interested Categories
+                        interestedCategories: updatedCategories
+                    };
+                    
+                    // If profile photo exists, keep it
+                    if (member.profilePhoto) {
+                        updatedMember.profilePhoto = member.profilePhoto;
+                    }
+                    
+                    // Update member
+                    if (updateMember(username, updatedMember)) {
+                        // Update display
+                        // Personal Information
+                        document.getElementById('memberMembershipId').textContent = updatedMembershipId || 'Not specified';
+                        document.getElementById('memberFullName').textContent = updatedFullName || '-';
+                        document.getElementById('memberEmail').textContent = updatedEmail || '-';
+                        document.getElementById('memberPhone').textContent = updatedPhone || '-';
+                        document.getElementById('memberJoinDate').textContent = updatedJoinDate ? formatDate(updatedJoinDate) : '-';
+                        document.getElementById('memberName').textContent = updatedFullName || updatedUsername;
+                        
+                        // Emergency Contact
+                        document.getElementById('memberEmergencyContactName').textContent = updatedEmergencyContactName || 'Not specified';
+                        document.getElementById('memberEmergencyContactRelationship').textContent = updatedEmergencyContactRelationship || 'Not specified';
+                        
+                        // Emergency Contact with clickable tel link
+                        const emergencyContactElement = document.getElementById('memberEmergencyContact');
+                        if (updatedEmergencyContact && updatedEmergencyContact !== 'Not specified') {
+                            emergencyContactElement.innerHTML = `<a href="tel:${updatedEmergencyContact}" style="color: #facc15; text-decoration: none; display: flex; align-items: center;"><i class="fas fa-phone" style="margin-right: 8px;"></i>${updatedEmergencyContact}</a>`;
+                        } else {
+                            emergencyContactElement.textContent = 'Not specified';
+                        }
+                        
+                        // Health Information
+                        document.getElementById('memberHealthCondition').textContent = updatedHealthCondition || 'None specified';
+                        
+                        // Interested Categories
+                        if (updatedCategories && updatedCategories.length > 0) {
+                            document.getElementById('memberInterestedCategories').textContent = updatedCategories.join(', ');
+                        } else {
+                            document.getElementById('memberInterestedCategories').textContent = 'None selected';
+                        }
+                        
+                        // Show success message
+                        document.getElementById('editResultMessage').innerHTML = '<div style="color: green;">Member updated successfully!</div>';
+                        
+                        // If username changed, need to update URL
+                        if (username !== updatedUsername) {
+                            setTimeout(function() {
+                                window.location.href = `member-details.html?username=${updatedUsername}`;
+                            }, 1500);
+                        } else {
+                            // Switch back to view mode after short delay
+                            setTimeout(function() {
+                                document.getElementById('viewModeDetails').style.display = 'block';
+                                document.getElementById('editModeDetails').style.display = 'none';
+                                document.getElementById('viewModeButtons').style.display = 'block';
+                                document.getElementById('editModeButtons').style.display = 'none';
+                                document.getElementById('editResultMessage').innerHTML = '';
+                            }, 1500);
+                        }
+                    } else {
+                        document.getElementById('editResultMessage').innerHTML = '<div style="color: red;">Failed to update member. Please try again.</div>';
+                    }
+                }
+            });
+            
+            // Handle delete button
+            document.querySelector('.delete-member-btn').addEventListener('click', function() {
+                if (confirm(`Are you sure you want to delete member "${username}"? This cannot be undone.`)) {
+                    if (deleteMember(username)) {
+                        alert('Member deleted successfully');
+                        window.location.href = 'members.html';
+                    } else {
+                        alert('Failed to delete member');
+                    }
+                }
+            });
+            
+            // Training assignment form has been removed
+        });
+        
+        function loadMemberDetails(username) {
+            const members = getAllMembers();
+            const member = members.find(m => m.username === username);
+            
+            if (!member) {
+                alert('Member not found');
+                window.location.href = 'members.html';
+                return;
+            }
+            
+            // Update profile image
+            const profileImage = document.getElementById('memberProfileImage');
+            if (member.profilePhoto) {
+                profileImage.innerHTML = `<img src="${member.profilePhoto}" alt="${member.username}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+            } else {
+                profileImage.innerHTML = `<span style="font-size: 3rem;">${member.fullName ? member.fullName.charAt(0) : member.username.charAt(0)}</span>`;
+            }
+            
+            // Update member details
+            document.getElementById('memberName').textContent = member.fullName || username;
+            document.getElementById('memberMembershipId').textContent = member.membershipId || 'Not specified';
+            document.getElementById('memberFullName').textContent = member.fullName || '-';
+            document.getElementById('memberEmail').textContent = member.email || '-';
+            document.getElementById('memberPhone').textContent = member.phone || '-';
+            document.getElementById('memberJoinDate').textContent = member.joinDate ? formatDate(member.joinDate) : '-';
+            
+            // Emergency Contact Information
+            document.getElementById('memberEmergencyContactName').textContent = member.emergencyContactName || 'Not specified';
+            document.getElementById('memberEmergencyContactRelationship').textContent = member.emergencyContactRelationship || 'Not specified';
+            
+            // Emergency Contact with clickable tel link
+            const emergencyContactElement = document.getElementById('memberEmergencyContact');
+            if (member.emergencyContact && member.emergencyContact !== 'Not specified') {
+                emergencyContactElement.innerHTML = `<a href="tel:${member.emergencyContact}" style="color: #facc15; text-decoration: none; display: flex; align-items: center;"><i class="fas fa-phone" style="margin-right: 8px;"></i>${member.emergencyContact}</a>`;
+            } else {
+                emergencyContactElement.textContent = 'Not specified';
+            }
+            
+            // Health Information
+            document.getElementById('memberHealthCondition').textContent = member.healthCondition || 'None specified';
+            
+            // Interested Categories
+            if (member.interestedCategories && member.interestedCategories.length > 0) {
+                document.getElementById('memberInterestedCategories').textContent = member.interestedCategories.join(', ');
+            } else {
+                document.getElementById('memberInterestedCategories').textContent = 'None selected';
+            }
+        }
+        
+        function loadMemberTrainings(username) {
+            const pastTrainings = document.getElementById('pastTrainings');
+            const paginationContainer = document.getElementById('pastTrainingsPagination');
+            
+            // Get member training data
+            const trainingData = getMemberTrainings(username);
+            
+            if (!trainingData || (!trainingData.current.length && !trainingData.past.length)) {
+                pastTrainings.innerHTML = '<p class="text-center">No training history available</p>';
+                paginationContainer.innerHTML = '';
+                
+                // Update statistics
+                document.getElementById('currentTrainingCount').textContent = '0';
+                document.getElementById('assignedTrainingCount').textContent = '0';
+                document.getElementById('completedSessionCount').textContent = '0';
+                document.getElementById('incompleteSessionCount').textContent = '0';
+                return;
+            }
+            
+            // Update statistics
+            document.getElementById('currentTrainingCount').textContent = trainingData.current.length;
+            document.getElementById('assignedTrainingCount').textContent = trainingData.current.length + trainingData.past.length;
+            
+            // Count completed and incomplete sessions
+            let completedSessions = 0;
+            let incompleteSessions = 0;
+            
+            // Count in current trainings
+            trainingData.current.forEach(training => {
+                if (training.morningSession) {
+                    if (training.morningSession.completed) {
+                        completedSessions++;
+                    } else {
+                        incompleteSessions++;
+                    }
+                }
+                
+                if (training.eveningSession) {
+                    if (training.eveningSession.completed) {
+                        completedSessions++;
+                    } else {
+                        incompleteSessions++;
+                    }
+                }
+            });
+            
+            // Count in past trainings
+            trainingData.past.forEach(training => {
+                if (training.morningSession) {
+                    if (training.morningSession.completed) {
+                        completedSessions++;
+                    } else {
+                        incompleteSessions++;
+                    }
+                }
+                
+                if (training.eveningSession) {
+                    if (training.eveningSession.completed) {
+                        completedSessions++;
+                    } else {
+                        incompleteSessions++;
+                    }
+                }
+            });
+            
+            document.getElementById('completedSessionCount').textContent = completedSessions;
+            document.getElementById('incompleteSessionCount').textContent = incompleteSessions;
+            
+            // Combine current and past trainings to show all training history
+            const allTrainings = [...trainingData.past];
+            
+            // Set up training search and pagination
+            displayPastTrainings(allTrainings, 1);
+            
+            // Setup search functionality
+            document.getElementById('searchPastTrainingsBtn').addEventListener('click', function() {
+                const searchTerm = document.getElementById('pastTrainingSearch').value.toLowerCase();
+                const filteredTrainings = allTrainings.filter(training => {
+                    return (
+                        training.type?.toLowerCase().includes(searchTerm) ||
+                        (training.morningSession && training.morningSession.details && 
+                         training.morningSession.details.toLowerCase().includes(searchTerm)) ||
+                        (training.eveningSession && training.eveningSession.details && 
+                         training.eveningSession.details.toLowerCase().includes(searchTerm))
+                    );
+                });
+                
+                displayPastTrainings(filteredTrainings, 1);
+            });
+            
+            // Handle Enter key in search box
+            document.getElementById('pastTrainingSearch').addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('searchPastTrainingsBtn').click();
+                }
+            });
+        }
+        
+        // Display past trainings with pagination
+        function displayPastTrainings(trainings, currentPage) {
+            const pastTrainings = document.getElementById('pastTrainings');
+            const paginationContainer = document.getElementById('pastTrainingsPagination');
+            const trainingsPerPage = 10;
+            
+            // If no past trainings
+            if (trainings.length === 0) {
+                pastTrainings.innerHTML = '<p class="text-center">No past trainings available</p>';
+                paginationContainer.innerHTML = '';
+                return;
+            }
+            
+            // Calculate pagination values
+            const totalPages = Math.ceil(trainings.length / trainingsPerPage);
+            const startIndex = (currentPage - 1) * trainingsPerPage;
+            const endIndex = Math.min(startIndex + trainingsPerPage, trainings.length);
+            const currentTrainings = trainings.slice(startIndex, endIndex);
+            
+            // Display current page of trainings
+            pastTrainings.innerHTML = '';
+            currentTrainings.forEach(training => {
+                const trainingCard = document.createElement('div');
+                trainingCard.className = 'training-card';
+                
+                // Format date
+                const formattedDate = new Date(training.date).toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                trainingCard.innerHTML = `
+                    <div class="training-title">
+                        <div>${training.type} Training <span class="badge badge-secondary">Past</span></div>
+                        <div>${formattedDate}</div>
+                    </div>
+
+                `;
+                
+                // Add morning session if available
+                if (training.morningSession) {
+                    const sessionClass = training.morningSession.completed ? 'training-session session-completed' : 'training-session session-pending';
+                    const statusBadge = training.morningSession.completed ? 
+                        '<span class="badge badge-success">Completed</span>' : 
+                        '<span class="badge badge-danger">Incomplete</span>';
+                    
+                    trainingCard.innerHTML += `
+                        <div class="${sessionClass}">
+                            <div style="display: flex; justify-content: space-between;">
+                                <div><strong>Morning Session (${training.morningSession.time})</strong></div>
+                                <div>${statusBadge}</div>
+                            </div>
+                            <div style="margin-top: 5px;">
+                                <strong>Details:</strong> ${training.morningSession.details || 'No details provided'}
+                            </div>
+                            <div style="margin-top: 5px; display: flex; flex-wrap: wrap; gap: 10px;">
+                                <div style="flex: 1; min-width: 150px;"><strong>Duration:</strong> ${training.morningSession.duration || '1 hour'}</div>
+                                <div style="flex: 1; min-width: 150px;"><strong>Intensity:</strong> ${training.morningSession.intensity || 'Medium'}</div>
+                                <div style="flex: 1; min-width: 150px;"><strong>Location:</strong> ${training.morningSession.location || 'Main Track'}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Add evening session if available
+                if (training.eveningSession) {
+                    const sessionClass = training.eveningSession.completed ? 'training-session session-completed' : 'training-session session-pending';
+                    const statusBadge = training.eveningSession.completed ? 
+                        '<span class="badge badge-success">Completed</span>' : 
+                        '<span class="badge badge-danger">Incomplete</span>';
+                    
+                    trainingCard.innerHTML += `
+                        <div class="${sessionClass}">
+                            <div style="display: flex; justify-content: space-between;">
+                                <div><strong>Evening Session (${training.eveningSession.time})</strong></div>
+                                <div>${statusBadge}</div>
+                            </div>
+                            <div style="margin-top: 5px;">
+                                <strong>Details:</strong> ${training.eveningSession.details || 'No details provided'}
+                            </div>
+                            <div style="margin-top: 5px; display: flex; flex-wrap: wrap; gap: 10px;">
+                                <div style="flex: 1; min-width: 150px;"><strong>Duration:</strong> ${training.eveningSession.duration || '1 hour'}</div>
+                                <div style="flex: 1; min-width: 150px;"><strong>Intensity:</strong> ${training.eveningSession.intensity || 'Medium'}</div>
+                                <div style="flex: 1; min-width: 150px;"><strong>Location:</strong> ${training.eveningSession.location || 'Main Track'}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                pastTrainings.appendChild(trainingCard);
+            });
+            
+            // Create pagination
+            paginationContainer.innerHTML = '';
+            if (totalPages > 1) {
+                const pagination = document.createElement('div');
+                pagination.className = 'pagination';
+                pagination.style.display = 'flex';
+                pagination.style.justifyContent = 'center';
+                pagination.style.gap = '5px';
+                
+                // Previous button
+                if (currentPage > 1) {
+                    const prevBtn = document.createElement('button');
+                    prevBtn.className = 'btn btn-sm btn-secondary';
+                    prevBtn.innerHTML = '&laquo;';
+                    prevBtn.addEventListener('click', function() {
+                        displayPastTrainings(trainings, currentPage - 1);
+                    });
+                    pagination.appendChild(prevBtn);
+                }
+                
+                // Page buttons
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageBtn = document.createElement('button');
+                    pageBtn.className = i === currentPage ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-secondary';
+                    pageBtn.textContent = i;
+                    pageBtn.addEventListener('click', function() {
+                        displayPastTrainings(trainings, i);
+                    });
+                    pagination.appendChild(pageBtn);
+                }
+                
+                // Next button
+                if (currentPage < totalPages) {
+                    const nextBtn = document.createElement('button');
+                    nextBtn.className = 'btn btn-sm btn-secondary';
+                    nextBtn.innerHTML = '&raquo;';
+                    nextBtn.addEventListener('click', function() {
+                        displayPastTrainings(trainings, currentPage + 1);
+                    });
+                    pagination.appendChild(nextBtn);
+                }
+                
+                paginationContainer.appendChild(pagination);
+            }
+        }
+    </script>
+</body>
+</html>

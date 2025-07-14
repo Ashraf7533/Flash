@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Past Training - Flash Running Club</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header" style="background-color: #facc15; display: flex; align-items: center; padding: 15px;">
+                <div id="sidebarAvatar" style="width: 50px; height: 50px; border-radius: 50%; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; margin-right: 10px; font-size: 1.5rem; overflow: hidden; border: 2px solid black;"></div>
+                <div id="sidebarMemberName" style="color: #000; font-weight: bold; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;"></div>
+                <button class="sidebar-toggle" id="sidebarToggle" style="background: none; border: none; color: #000; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="member-dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="member-availability.html"><i class="fas fa-calendar-check"></i> Training Availability</a></li>
+                    <li><a href="member-current-training.html"><i class="fas fa-running"></i> Current Trainings</a></li>
+                    <li><a href="past-training.html" class="active"><i class="fas fa-history"></i> Past Trainings</a></li>
+                    <li><a href="member-payments.html"><i class="fas fa-credit-card"></i> Payments</a></li>
+                    <li><a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a></li>
+                    <li><a href="photos.html"><i class="fas fa-images"></i> Photos</a></li>
+                    <li><a href="about-us.html"><i class="fas fa-info-circle"></i> About Us</a></li>
+                    <li><a href="member-profile.html"><i class="fas fa-user"></i> Profile</a></li>
+                    <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <div class="hamburger" id="hamburger">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <img src="3nwp2q1ufj.png" alt="Flash Running Club Logo" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: middle; animation: logo-flash 2s infinite;">
+                    <span style="font-size: 0.9rem; white-space: nowrap; font-weight: bold;">Flash Running Club</span>
+                </div>
+            </div>
+
+            <div class="content-header">
+                <h2>Past Training History</h2>
+                <p>View your completed training sessions below.</p>
+            </div>
+
+            <!-- Past Trainings -->
+            <div id="past-trainings" class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Your Completed Trainings</h3>
+                </div>
+                <div class="card-body">
+                    <div id="pastTrainingsList">
+                        <div class="loading-message">Loading your past trainings...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/training.js"></script>
+    <script src="js/members.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in as member
+            if (localStorage.getItem('userType') !== 'member' || !localStorage.getItem('username')) {
+                window.location.href = 'member-login.html';
+                return;
+            }
+
+            const username = localStorage.getItem('username');
+            
+            // Display user's name and avatar in the sidebar and header
+            displayMemberInfo(username);
+
+            // Load member trainings
+            loadPastTrainings();
+            
+            // Logout functionality
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                logout();
+            });
+        });
+
+        // Function to display member information in sidebar and header
+        function displayMemberInfo(username) {
+            try {
+                const members = getAllMembers();
+                const member = members.find(m => m.username === username);
+                
+                if (member) {
+                    // Update sidebar with name
+                    let displayName = username;
+                    if (member.fullName) {
+                        displayName = member.fullName;
+                    }
+                    document.getElementById('sidebarMemberName').textContent = displayName;
+                    
+                    // Set avatar image or initials in the sidebar
+                    const sidebarAvatar = document.getElementById('sidebarAvatar');
+                    if (member.profilePhoto) {
+                        sidebarAvatar.innerHTML = `<img src="${member.profilePhoto}" alt="${username}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                    } else {
+                        const initial = member.fullName ? member.fullName.charAt(0).toUpperCase() : username.charAt(0).toUpperCase();
+                        sidebarAvatar.innerHTML = initial;
+                    }
+                }
+            } catch (error) {
+                console.error('Error displaying member info:', error);
+            }
+        }
+        
+        function loadPastTrainings() {
+            const username = localStorage.getItem('username');
+            const trainings = getMemberTrainings(username);
+            
+            const pastTrainingsEl = document.getElementById('pastTrainingsList');
+            
+            // Display past trainings
+            if (trainings.past.length === 0) {
+                pastTrainingsEl.innerHTML = '<p>No completed trainings yet.</p>';
+            } else {
+                pastTrainingsEl.innerHTML = '';
+                trainings.past.forEach(training => {
+                    const trainingEl = document.createElement('div');
+                    trainingEl.className = 'training-session past-training';
+                    // Determine the completion status
+                    const morningCompleted = training.morningSession ? training.morningSession.completed : true;
+                    const eveningCompleted = training.eveningSession ? training.eveningSession.completed : true;
+                    
+                    let statusColor, statusText;
+                    
+                    if (morningCompleted && eveningCompleted) {
+                        // Both sessions completed - green
+                        statusColor = '#28a745';
+                        statusText = 'Completed';
+                    } else if (!morningCompleted && !eveningCompleted) {
+                        // Both sessions incomplete - red
+                        statusColor = '#dc3545';
+                        statusText = 'Incomplete';
+                    } else {
+                        // One completed, one incomplete - green
+                        statusColor = '#28a745';
+                        statusText = 'Partially Completed';
+                    }
+                    
+                    trainingEl.innerHTML = `
+                        <div class="training-session-time">${training.date}
+                            <span class="badge" style="background-color: ${statusColor}; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.8em;">
+                                ${statusText}
+                            </span>
+                        </div>
+                        <div class="training-session-details">
+                            ${training.morningSession ? `
+                                <div style="margin-bottom: 10px;">
+                                    <strong><i class="fas fa-sun"></i> Morning Session</strong>
+                                    ${training.morningSession.completed ? 
+                                        '<span class="badge" style="background-color: #28a745; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.7em; margin-left: 10px;">Completed</span>' : 
+                                        '<span class="badge" style="background-color: #dc3545; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.7em; margin-left: 10px;">Incomplete</span>'
+                                    }
+                                    <p>${training.morningSession.description}</p>
+                                </div>
+                            ` : ''}
+                            ${training.eveningSession ? `
+                                <div style="margin-bottom: 10px;">
+                                    <strong><i class="fas fa-moon"></i> Evening Session</strong>
+                                    ${training.eveningSession.completed ? 
+                                        '<span class="badge" style="background-color: #28a745; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.7em; margin-left: 10px;">Completed</span>' : 
+                                        '<span class="badge" style="background-color: #dc3545; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.7em; margin-left: 10px;">Incomplete</span>'
+                                    }
+                                    <p>${training.eveningSession.description}</p>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                    pastTrainingsEl.appendChild(trainingEl);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

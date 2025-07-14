@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Members - Flash Running Club</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Additional styles for members page */
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px 0 0 5px;
+            font-size: 1rem;
+        }
+        
+        .search-btn {
+            padding: 10px 15px;
+            background-color: #facc15;
+            color: #000;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        .edit-btn {
+            background-color: #facc15;
+            color: #000;
+            border: none;
+        }
+        
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+        }
+        
+        .member-table {
+            width: 100%;
+        }
+        
+        .member-table td, .member-table th {
+            padding: 12px;
+        }
+        
+        .member-name {
+            cursor: pointer;
+            color: #000;
+            font-weight: bold;
+        }
+        
+        .member-name:hover {
+            color: #facc15;
+            text-decoration: underline;
+        }
+        
+        @media screen and (max-width: 768px) {
+            .table-responsive {
+                overflow-x: auto;
+            }
+            
+            .action-btn {
+                padding: 5px 8px;
+                font-size: 0.8rem;
+                margin-right: 8px;
+                margin-bottom: 5px;
+                display: inline-block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header" style="background-color: #facc15; display: flex; align-items: center; padding: 15px;">
+                <div class="sidebar-logo" style="display: flex; align-items: center; flex: 1;">
+                    <img src="3nwp2q1ufj.png" alt="Flash Running Club Logo" style="width: 30px; height: 30px; margin-right: 10px; vertical-align: middle; animation: logo-flash 2s infinite; border-radius: 50%;">
+                    <span style="font-weight: bold; font-size: 1rem; color: #000;">Admin Panel</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle" style="background: none; border: none; color: #000; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="admin-dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="members.html" class="active"><i class="fas fa-users"></i> All Members</a></li>
+                    <li><a href="add-member.html"><i class="fas fa-user-plus"></i> Add Member</a></li>
+                    <li><a href="training.html"><i class="fas fa-running"></i> Trainings</a></li>
+                    <li><a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a></li>
+                    <li><a href="payments.html"><i class="fas fa-credit-card"></i> Payments</a></li>
+                    <li><a href="photos.html"><i class="fas fa-images"></i> Photos</a></li>
+                    <li><a href="about-us.html"><i class="fas fa-info-circle"></i> About Us</a></li>
+                    <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <div class="hamburger" id="hamburger">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <img src="3nwp2q1ufj.png" alt="Flash Running Club Logo" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: middle; animation: logo-flash 2s infinite;">
+                    <span style="font-size: 0.9rem; white-space: nowrap; font-weight: bold;">Flash Running Club</span>
+                </div>
+            </div>
+
+            <div class="content-header">
+                <h2>Members</h2>
+                <p>View, edit or remove club members</p>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="search-container">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Search members...">
+                        <button class="search-btn" id="searchBtn"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Members List -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Club Members</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table member-table">
+                            <thead>
+                                <tr>
+                                    <th>Member Name</th>
+                                </tr>
+                            </thead>
+                            <tbody id="membersTableBody">
+                                <tr>
+                                    <td colspan="5" class="text-center">Loading members...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/training.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in as admin
+            if (localStorage.getItem('userType') !== 'admin' || localStorage.getItem('username') !== 'FlashRC12') {
+                window.location.href = 'admin-login.html';
+                return;
+            }
+
+            // Get DOM elements
+            const searchInput = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+            
+            // Logout functionality
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                logout();
+            });
+            
+            // Load members
+            loadMembers();
+            
+            // Search functionality
+            searchBtn.addEventListener('click', function() {
+                const searchTerm = searchInput.value.trim().toLowerCase();
+                loadMembers(searchTerm);
+            });
+            
+            searchInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    const searchTerm = searchInput.value.trim().toLowerCase();
+                    loadMembers(searchTerm);
+                }
+            });
+        });
+        
+        function loadMembers(searchTerm = '') {
+            const membersTableBody = document.getElementById('membersTableBody');
+            const members = getAllMembers();
+            
+            membersTableBody.innerHTML = '';
+            
+            if (members.length === 0) {
+                membersTableBody.innerHTML = '<tr><td colspan="1" class="text-center">No members found</td></tr>';
+                return;
+            }
+            
+            let filteredMembers = members;
+            
+            if (searchTerm) {
+                filteredMembers = members.filter(member => {
+                    return (
+                        member.username.toLowerCase().includes(searchTerm) ||
+                        member.email?.toLowerCase().includes(searchTerm) ||
+                        member.phone?.toLowerCase().includes(searchTerm)
+                    );
+                });
+                
+                if (filteredMembers.length === 0) {
+                    membersTableBody.innerHTML = '<tr><td colspan="1" class="text-center">No members match your search</td></tr>';
+                    return;
+                }
+            }
+            
+            filteredMembers.forEach(member => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <a href="member-details.html?username=${member.username}" style="display: flex; align-items: center; text-decoration: none;">
+                            ${member.profilePhoto ? 
+                                `<img src="${member.profilePhoto}" alt="${member.username}" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; vertical-align: middle;">` : 
+                                `<span class="avatar-placeholder" style="display: inline-block; width: 40px; height: 40px; border-radius: 50%; background-color: #f0f0f0; text-align: center; line-height: 40px; margin-right: 10px;">${member.fullName ? member.fullName.charAt(0) : member.username.charAt(0)}</span>`
+                            }
+                            <span class="member-name">
+                                ${member.fullName ? member.fullName : member.username}
+                            </span>
+                        </a>
+                    </td>
+                `;
+                membersTableBody.appendChild(row);
+                
+                // No need to load training details for the member list
+            });
+        }
+        
+        // Function removed since training is only shown in member details
+        
+        // These functions are now only used on the member-details page
+    </script>
+</body>
+</html>

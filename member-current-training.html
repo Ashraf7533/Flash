@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Current Training - Flash Running Club</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Training page specific styles */
+        .training-session {
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        
+        .training-session-time {
+            font-weight: bold;
+            margin-bottom: 10px;
+            background-color: #facc15;
+            padding: 5px 10px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+        
+        .training-session-details {
+            margin-top: 10px;
+        }
+        
+        .badge {
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header" style="background-color: #facc15; display: flex; align-items: center; padding: 15px;">
+                <div id="sidebarAvatar" style="width: 50px; height: 50px; border-radius: 50%; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; margin-right: 10px; font-size: 1.5rem; overflow: hidden; border: 2px solid black;"></div>
+                <div id="sidebarMemberName" style="color: #000; font-weight: bold; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;"></div>
+                <button class="sidebar-toggle" id="sidebarToggle" style="background: none; border: none; color: #000; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="member-dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="member-availability.html"><i class="fas fa-calendar-check"></i> Training Availability</a></li>
+                    <li><a href="member-current-training.html" class="active"><i class="fas fa-running"></i> Current Trainings</a></li>
+                    <li><a href="member-past-training.html"><i class="fas fa-history"></i> Past Trainings</a></li>
+                    <li><a href="member-payments.html"><i class="fas fa-credit-card"></i> Payments</a></li>
+                    <li><a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a></li>
+                    <li><a href="photos.html"><i class="fas fa-images"></i> Photos</a></li>
+                    <li><a href="about-us.html"><i class="fas fa-info-circle"></i> About Us</a></li>
+                    <li><a href="member-profile.html"><i class="fas fa-user"></i> Profile</a></li>
+                    <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <div class="hamburger" id="hamburger">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <img src="3nwp2q1ufj.png" alt="Flash Running Club Logo" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: middle; animation: logo-flash 2s infinite;">
+                    <span style="font-size: 0.9rem; white-space: nowrap; font-weight: bold;">Flash Running Club</span>
+                </div>
+            </div>
+
+            <div class="content-header">
+                <h2>Current Training Schedule</h2>
+                <p>View and manage your upcoming training sessions</p>
+            </div>
+
+            <!-- Current Trainings -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Your Current Training Schedule</h3>
+                </div>
+                <div class="card-body">
+                    <div id="currentTrainingsList">
+                        <div class="loading-message">Loading your current trainings...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/training.js"></script>
+    <script src="js/members.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Debug statements to check authentication
+            console.log('Authentication check started');
+            console.log('User type:', localStorage.getItem('userType'));
+            console.log('Username:', localStorage.getItem('username'));
+            console.log('Session ID:', localStorage.getItem('currentSessionId'));
+            
+            // Check if user is logged in as member
+            if (localStorage.getItem('userType') !== 'member' || !localStorage.getItem('username')) {
+                console.log('Not authenticated, redirecting to login');
+                window.location.href = 'member-login.html';
+                return;
+            }
+            
+            console.log('Authentication successful, proceeding with page load');
+
+            const username = localStorage.getItem('username');
+            
+            // Display user's name and avatar in the sidebar
+            displayMemberInfo(username);
+
+            // Load current trainings
+            loadCurrentTrainings();
+            
+            // Setup real-time training updates
+            setupTrainingUpdates();
+
+            // Logout functionality
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                logout();
+            });
+        });
+
+        // Function to display member information in sidebar
+        function displayMemberInfo(username) {
+            try {
+                const members = getAllMembers();
+                const member = members.find(m => m.username === username);
+                
+                if (member) {
+                    // Set name
+                    let displayName = username;
+                    if (member.fullName) {
+                        displayName = member.fullName;
+                    }
+                    document.getElementById('sidebarMemberName').textContent = displayName;
+                    
+                    // Set avatar image or initials in the sidebar
+                    const sidebarAvatar = document.getElementById('sidebarAvatar');
+                    if (member.profilePhoto) {
+                        sidebarAvatar.innerHTML = `<img src="${member.profilePhoto}" alt="${username}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                    } else {
+                        const initial = member.fullName ? member.fullName.charAt(0).toUpperCase() : username.charAt(0).toUpperCase();
+                        sidebarAvatar.innerHTML = initial;
+                    }
+                }
+            } catch (error) {
+                console.error('Error displaying member info:', error);
+            }
+        }
+        
+        // Setup real-time training updates
+        function setupTrainingUpdates() {
+            // Store the current timestamp when the page loads
+            let lastCheckedTimestamp = getTrainingUpdateTimestamp();
+            
+            // Check for updates every 5 seconds
+            setInterval(() => {
+                if (checkForTrainingUpdates(lastCheckedTimestamp)) {
+                    // Update the last checked timestamp
+                    lastCheckedTimestamp = getTrainingUpdateTimestamp();
+                    
+                    // Reload trainings if there's an update
+                    loadCurrentTrainings();
+                    console.log('Training data updated from admin');
+                }
+            }, 5000); // Check every 5 seconds
+        }
+
+        function loadCurrentTrainings() {
+            const username = localStorage.getItem('username');
+            const trainings = getMemberTrainings(username);
+            
+            const currentTrainingsEl = document.getElementById('currentTrainingsList');
+            
+            // Display current trainings
+            if (trainings.current.length === 0) {
+                currentTrainingsEl.innerHTML = '<p>No current trainings assigned.</p>';
+            } else {
+                currentTrainingsEl.innerHTML = '';
+                
+                // Add info about visibility for completed trainings
+                const infoMessage = document.createElement('div');
+                infoMessage.className = 'alert';
+                infoMessage.style.backgroundColor = '#f8f9fa';
+                infoMessage.style.padding = '10px 15px';
+                infoMessage.style.borderRadius = '5px';
+                infoMessage.style.marginBottom = '15px';
+                infoMessage.style.borderLeft = '4px solid #facc15';
+                infoMessage.innerHTML = `
+                    <p style="margin: 0;"><i class="fas fa-info-circle" style="color: #facc15;"></i> <strong>Note:</strong> Completed trainings will be automatically removed after 1 hour. Trainings that are not completed within 3 days will be marked as incomplete.</p>
+                `;
+                currentTrainingsEl.appendChild(infoMessage);
+                
+                // Display training sessions
+                trainings.current.forEach(training => {
+                    const trainingEl = document.createElement('div');
+                    trainingEl.className = 'training-session';
+                    trainingEl.innerHTML = `
+                        <div class="training-session-time">${training.date}</div>
+                        <div class="training-session-details">
+                            ${training.morningSession ? `
+                                <div style="margin-bottom: 10px; ${training.morningSession.completed ? 'opacity: 0.7;' : ''}">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <strong><i class="fas fa-sun"></i> Morning Session</strong>
+                                        <div style="display: flex; gap: 10px;">
+                                            ${training.morningSession.permanent ? 
+                                                (training.morningSession.completed ? 
+                                                    '<span class="badge" style="background-color: #28a745; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.8em;">Completed</span>' : 
+                                                    '<span class="badge" style="background-color: #dc3545; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.8em;">Incomplete</span>'
+                                                ) : 
+                                            '<div style="display: flex; gap: 10px; justify-content: flex-end;">' +
+                                                '<button class="btn btn-success complete-session-btn" data-id="' + training.id + '" data-session="morning" style="font-size: 0.8em; padding: 3px 8px; margin-bottom: 5px;">Complete</button>' +
+                                                '<button class="btn btn-danger incomplete-session-btn" data-id="' + training.id + '" data-session="morning" style="font-size: 0.8em; padding: 3px 8px; margin-bottom: 5px;">Incomplete</button>' +
+                                            '</div>'}
+                                        </div>
+                                    </div>
+                                    <p>${training.morningSession.description}</p>
+                                </div>
+                            ` : ''}
+                            ${training.eveningSession ? `
+                                <div style="margin-bottom: 10px; ${training.eveningSession.completed ? 'opacity: 0.7;' : ''}">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <strong><i class="fas fa-moon"></i> Evening Session</strong>
+                                        <div style="display: flex; gap: 10px;">
+                                            ${training.eveningSession.permanent ? 
+                                                (training.eveningSession.completed ? 
+                                                    '<span class="badge" style="background-color: #28a745; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.8em;">Completed</span>' : 
+                                                    '<span class="badge" style="background-color: #dc3545; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.8em;">Incomplete</span>'
+                                                ) : 
+                                            '<div style="display: flex; gap: 10px; justify-content: flex-end;">' +
+                                                '<button class="btn btn-success complete-session-btn" data-id="' + training.id + '" data-session="evening" style="font-size: 0.8em; padding: 3px 8px; margin-bottom: 5px;">Complete</button>' +
+                                                '<button class="btn btn-danger incomplete-session-btn" data-id="' + training.id + '" data-session="evening" style="font-size: 0.8em; padding: 3px 8px; margin-bottom: 5px;">Incomplete</button>' +
+                                            '</div>'}
+                                        </div>
+                                    </div>
+                                    <p>${training.eveningSession.description}</p>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                    currentTrainingsEl.appendChild(trainingEl);
+                });
+                
+                // Add event listeners to mark session as permanently completed
+                document.querySelectorAll('.complete-session-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const trainingId = parseInt(this.getAttribute('data-id'));
+                        const sessionType = this.getAttribute('data-session');
+                        
+                        // Ask for confirmation
+                        if (confirm(`Are you sure you want to mark this ${sessionType} session as COMPLETE? This action cannot be undone.`)) {
+                            if (completeTrainingSessionPermanently(username, trainingId, sessionType)) {
+                                loadCurrentTrainings(); // Reload the trainings
+                                alert(`${sessionType.charAt(0).toUpperCase() + sessionType.slice(1)} session has been permanently marked as completed!`);
+                            } else {
+                                alert('Failed to update session status.');
+                            }
+                        }
+                    });
+                });
+                
+                // Add event listeners to mark session as permanently incomplete
+                document.querySelectorAll('.incomplete-session-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const trainingId = parseInt(this.getAttribute('data-id'));
+                        const sessionType = this.getAttribute('data-session');
+                        
+                        // Ask for confirmation
+                        if (confirm(`Are you sure you want to mark this ${sessionType} session as INCOMPLETE? This action cannot be undone.`)) {
+                            if (markSessionIncompletePermanently(username, trainingId, sessionType)) {
+                                loadCurrentTrainings(); // Reload the trainings
+                                alert(`${sessionType.charAt(0).toUpperCase() + sessionType.slice(1)} session has been permanently marked as incomplete!`);
+                            } else {
+                                alert('Failed to update session status.');
+                            }
+                        }
+                    });
+                });
+            }
+        }
+    </script>
+</body>
+</html>
