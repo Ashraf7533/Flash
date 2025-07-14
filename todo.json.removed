@@ -1,1 +1,0 @@
-[{"id":"CLEANUP-001","content":"Remove unnecessary files from project","status":"in_progress","priority":"high"},{"id":"UPDATE-002","content":"Update all HTML files with consistent styling and structure","status":"pending","priority":"high"},{"id":"REMOVE-003","content":"Remove Firebase-related and obsolete files","status":"pending","priority":"medium"}]
