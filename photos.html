@@ -459,6 +459,20 @@
                 logout();
             });
             
+            // Logout all devices functionality
+            document.getElementById('logoutAllBtn')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                const username = localStorage.getItem('username');
+                const confirmLogoutAll = confirm(
+                    'This will logout your account from ALL devices.\n\nAre you sure you want to continue?'
+                );
+                
+                if (confirmLogoutAll) {
+                    logoutAllSessions(username);
+                    logout();
+                }
+            });
+            
             // Setup photo upload section if user is admin
             setupPhotoUploadSection();
             
@@ -491,13 +505,14 @@
             sidebarMenu.innerHTML = `
                 <li><a href="member-dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                 <li><a href="member-availability.html"><i class="fas fa-calendar-check"></i> Training Availability</a></li>
-                <li><a href="#current-trainings" id="currentTrainingsBtn"><i class="fas fa-running"></i> Current Trainings</a></li>
+                <li><a href="member-current-training.html"><i class="fas fa-running"></i> Current Trainings</a></li>
                 <li><a href="member-payments.html"><i class="fas fa-credit-card"></i> Payments</a></li>
                 <li><a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a></li>
                 <li><a href="photos.html" class="active"><i class="fas fa-images"></i> Photos</a></li>
                 <li><a href="about-us.html"><i class="fas fa-info-circle"></i> About Us</a></li>
                 <li><a href="member-profile.html"><i class="fas fa-user"></i> Profile</a></li>
                 <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                <li><a href="#" id="logoutAllBtn" style="color: #dc3545;"><i class="fas fa-power-off"></i> Logout All Devices</a></li>
             `;
             
             // Display member info in the sidebar header

@@ -709,6 +709,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('memberAvailabilitySection').style.display = 'none';
                 }
             });
+            
+            // Setup auto-refresh for member availability updates
+            setupAvailabilityAutoRefresh(() => {
+                const selectedMember = memberSelect.value;
+                if (selectedMember) {
+                    console.log('Auto-refreshing availability for:', selectedMember);
+                    showMemberAvailability(selectedMember);
+                }
+            });
         }
         
         // Function to display member availability for the selected date and week

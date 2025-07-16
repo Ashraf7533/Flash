@@ -12,9 +12,9 @@
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header" style="background-color: #facc15; display: flex; align-items: center; padding: 15px;">
-                <div id="sidebarAvatar" style="width: 50px; height: 50px; border-radius: 50%; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; margin-right: 10px; font-size: 1.5rem; overflow: hidden; border: 2px solid black;"></div>
+                <div id="sidebarAvatar" style="width: 50px; height: 50px; border-radius: 50%; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; margin-right: 10px; font-size: 1.5rem; overflow: hidden; border: 2px solid black; flex-shrink: 0;"></div>
                 <div id="sidebarMemberName" style="color: #000; font-weight: bold; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;"></div>
-                <button class="sidebar-toggle" id="sidebarToggle" style="background: none; border: none; color: #000; cursor: pointer;">
+                <button class="sidebar-toggle" id="sidebarToggle" style="background: none; border: none; color: #000; cursor: pointer; flex-shrink: 0;">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -29,6 +29,7 @@
                     <li><a href="about-us.html"><i class="fas fa-info-circle"></i> About Us</a></li>
                     <li><a href="member-profile.html"><i class="fas fa-user"></i> Profile</a></li>
                     <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    <li><a href="#" id="logoutAllBtn" style="color: #dc3545;"><i class="fas fa-power-off"></i> Logout All Devices</a></li>
                 </ul>
             </div>
         </div>
@@ -130,14 +131,15 @@
                 window.location.href = 'member-login.html';
                 return;
             }
-
-            const username = localStorage.getItem('username');
             
             // Display user's name and avatar in the sidebar and header
             displayMemberInfo(username);
 
             // Load member statistics
             loadMemberStats();
+            
+            // Load running times
+            loadDashboardRunningTimes(username);
             
             // Setup real-time training updates
             setupTrainingUpdates();
@@ -146,6 +148,19 @@
             document.getElementById('logoutBtn').addEventListener('click', function(e) {
                 e.preventDefault();
                 logout();
+            });
+            
+            // Logout all devices functionality
+            document.getElementById('logoutAllBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                const confirmLogoutAll = confirm(
+                    'This will logout your account from ALL devices.\n\nAre you sure you want to continue?'
+                );
+                
+                if (confirmLogoutAll) {
+                    logoutAllSessions(username);
+                    logout();
+                }
             });
         });
 
