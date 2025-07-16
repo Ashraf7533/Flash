@@ -51,6 +51,14 @@ function setMemberAvailabilityForDate(username, date, availability) {
     availabilityData[username][dayKey] = availability;
     
     localStorage.setItem('memberAvailability', JSON.stringify(availabilityData));
+    
+    // Set update timestamp for admin auto-refresh
+    localStorage.setItem('memberAvailabilityLastUpdate', Date.now().toString());
+    
+    // Trigger event for real-time updates
+    window.dispatchEvent(new CustomEvent('memberAvailabilityUpdated', {
+        detail: { username, date, availability }
+    }));
 }
 
 // Get member availability for an entire week
@@ -80,4 +88,32 @@ function getMemberAvailabilityForWeek(username, weekStartDate) {
 function memberHasAvailabilityData(username) {
     const availabilityData = JSON.parse(localStorage.getItem('memberAvailability')) || {};
     return availabilityData[username] && Object.keys(availabilityData[username]).length > 0;
+}
+
+// Get last availability update timestamp
+function getAvailabilityUpdateTimestamp() {
+    return localStorage.getItem('memberAvailabilityLastUpdate') || '0';
+}
+
+// Setup auto-refresh for admin pages
+function setupAvailabilityAutoRefresh(refreshCallback) {
+    let lastUpdateTimestamp = getAvailabilityUpdateTimestamp();
+    
+    // Check for updates every 3 seconds
+    setInterval(() => {
+        const currentTimestamp = getAvailabilityUpdateTimestamp();
+        if (currentTimestamp !== lastUpdateTimestamp) {
+            lastUpdateTimestamp = currentTimestamp;
+            if (typeof refreshCallback === 'function') {
+                refreshCallback();
+            }
+        }
+    }, 3000);
+    
+    // Also listen for real-time events
+    window.addEventListener('memberAvailabilityUpdated', function(event) {
+        if (typeof refreshCallback === 'function') {
+            refreshCallback();
+        }
+    });
 }
