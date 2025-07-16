@@ -73,6 +73,12 @@ function cleanupOldSessions(username, userType) {
     localStorage.setItem('activeSessions', JSON.stringify(sessions));
 }
 
+function logoutAllSessions(username) {
+    const sessions = JSON.parse(localStorage.getItem('activeSessions')) || {};
+    delete sessions[username];
+    localStorage.setItem('activeSessions', JSON.stringify(sessions));
+}
+
 function checkDeviceLimit(username, userType) {
     const activeSessions = getActiveSessions(username);
     const limit = DEVICE_LIMITS[userType];
@@ -229,10 +235,22 @@ function loginAsMember(username, password) {
         
         // Check device limit for members (1 device only)
         if (!checkDeviceLimit(username, 'member')) {
-            // Show error message for device limit exceeded
-            loginError.textContent = 'Account is already logged in on another device. Only one device is allowed for members.';
-            loginError.style.display = 'block';
-            return;
+            // Show device limit error with logout option
+            const confirmLogout = confirm(
+                'Account is already logged in on another device. Only one device is allowed for members.\n\n' +
+                'Would you like to logout from all devices and login here?'
+            );
+            
+            if (confirmLogout) {
+                // Force logout all sessions for this member
+                logoutAllSessions(username);
+                
+                // Continue with login
+            } else {
+                loginError.textContent = 'Login cancelled. Account is still active on another device.';
+                loginError.style.display = 'block';
+                return;
+            }
         }
         
         // Add new active session
