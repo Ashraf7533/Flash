@@ -91,7 +91,7 @@ function addVersionToSidebar() {
         bottom: 10px;
         left: 15px;
         right: 15px;
-        color: #667;
+        color: #facc15;
         font-size: 0.8rem;
         text-align: center;
         border-top: 1px solid #eee;
