@@ -194,6 +194,7 @@
                     <li><a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a></li>
                     <li><a href="photos.html"><i class="fas fa-images"></i> Photos</a></li>
                     <li><a href="about-us.html"><i class="fas fa-info-circle"></i> About Us</a></li>
+                    <li><a href="ask-board.html"><i class="fas fa-question-circle"></i> Ask Board</a></li>
                     <li><a href="member-profile.html" class="active"><i class="fas fa-user"></i> Profile</a></li>
                     <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                     <li><a href="#" id="logoutAllBtn" style="color: #dc3545;"><i class="fas fa-power-off"></i> Logout All Devices</a></li>
@@ -316,20 +317,38 @@
                 <div class="card-body">
                     <form id="profileForm">
                         <div class="form-group">
-                            <label for="fullName">Full Name</label>
+                            <label for="fullName">Full Name <span style="color: #888; font-size: 0.8rem;">(Locked)</span></label>
                             <input type="text" id="fullName" class="form-control readonly-field" placeholder="Your full name" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Member Phone Number</label>
+                            <input type="tel" id="phone" class="form-control" placeholder="Your phone number" required>
                         </div>
                         <div class="form-group">
                             <label for="email">Email Address</label>
                             <input type="email" id="email" class="form-control" placeholder="your.email@example.com" required>
                         </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card mt-20">
+                <div class="card-header">
+                    <h3 class="card-title">Emergency Contact</h3>
+                </div>
+                <div class="card-body">
+                    <form id="emergencyForm">
                         <div class="form-group">
-                            <label for="phone">Phone Number</label>
-                            <input type="tel" id="phone" class="form-control" placeholder="Your phone number" required>
+                            <label for="emergencyContactName">Emergency Contact Name</label>
+                            <input type="text" id="emergencyContactName" class="form-control" placeholder="Emergency contact name" required>
                         </div>
                         <div class="form-group">
-                            <label for="emergencyContact">Emergency Contact Number</label>
-                            <input type="tel" id="emergencyContact" class="form-control" placeholder="Emergency contact number" required>
+                            <label for="emergencyContactNumber">Emergency Contact Number</label>
+                            <input type="tel" id="emergencyContactNumber" class="form-control" placeholder="Emergency contact number" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="emergencyContactRelationship">Relationship</label>
+                            <input type="text" id="emergencyContactRelationship" class="form-control" placeholder="Relationship (e.g., Parent, Spouse, Friend)" required>
                         </div>
                         <div class="form-group">
                             <p class="text-muted" style="font-size: 0.9rem; margin-bottom: 15px;">
@@ -383,6 +402,12 @@
             
             // Profile form submission
             document.getElementById('profileForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                updateProfile(username);
+            });
+            
+            // Emergency form submission
+            document.getElementById('emergencyForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 updateProfile(username);
             });
@@ -472,10 +497,12 @@
             }
             
             // Set form fields
-            document.getElementById('fullName').value = member.username;
+            document.getElementById('fullName').value = member.fullName || member.username;
             document.getElementById('email').value = member.email || '';
             document.getElementById('phone').value = member.phone || '';
-            document.getElementById('emergencyContact').value = member.emergencyContact || '';
+            document.getElementById('emergencyContactName').value = member.emergencyContactName || '';
+            document.getElementById('emergencyContactNumber').value = member.emergencyContactNumber || '';
+            document.getElementById('emergencyContactRelationship').value = member.emergencyContactRelationship || '';
             
             // Re-attach event listeners for photo upload
             document.getElementById('avatarUpload').addEventListener('click', function() {
@@ -637,15 +664,19 @@
                 return;
             }
             
-            // Get updated fields
+            // Get updated fields from both forms
             const email = document.getElementById('email').value.trim();
             const phone = document.getElementById('phone').value.trim();
-            const emergencyContact = document.getElementById('emergencyContact').value.trim();
+            const emergencyContactName = document.getElementById('emergencyContactName').value.trim();
+            const emergencyContactNumber = document.getElementById('emergencyContactNumber').value.trim();
+            const emergencyContactRelationship = document.getElementById('emergencyContactRelationship').value.trim();
             
             // Update member data
             members[memberIndex].email = email;
             members[memberIndex].phone = phone;
-            members[memberIndex].emergencyContact = emergencyContact;
+            members[memberIndex].emergencyContactName = emergencyContactName;
+            members[memberIndex].emergencyContactNumber = emergencyContactNumber;
+            members[memberIndex].emergencyContactRelationship = emergencyContactRelationship;
             
             // Save back to localStorage
             localStorage.setItem('memberDb', JSON.stringify(members));
