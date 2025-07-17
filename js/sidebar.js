@@ -91,12 +91,12 @@ function addVersionToSidebar() {
         bottom: 10px;
         left: 15px;
         right: 15px;
-        color: #666;
+        color: #667;
         font-size: 0.8rem;
         text-align: center;
         border-top: 1px solid #eee;
         padding-top: 10px;
-        background: white;
+        background: black;
     `;
     versionElement.innerHTML = '<span>Version: 1.0.01</span>';
     
