@@ -69,5 +69,37 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // Add version number to sidebar bottom
+    addVersionToSidebar();
+    
     console.log("Sidebar initialization complete");
 });
+
+// Function to add version number to sidebar
+function addVersionToSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+    
+    // Check if version element already exists
+    if (document.getElementById('sidebar-version')) return;
+    
+    // Create version element
+    const versionElement = document.createElement('div');
+    versionElement.id = 'sidebar-version';
+    versionElement.style.cssText = `
+        position: absolute;
+        bottom: 10px;
+        left: 15px;
+        right: 15px;
+        color: #666;
+        font-size: 0.8rem;
+        text-align: center;
+        border-top: 1px solid #eee;
+        padding-top: 10px;
+        background: white;
+    `;
+    versionElement.innerHTML = '<span>Version: 1.0.01</span>';
+    
+    // Add to sidebar
+    sidebar.appendChild(versionElement);
+}
