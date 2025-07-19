@@ -58,7 +58,15 @@
                 const username = document.getElementById('username').value;
                 const password = document.getElementById('password').value;
                 
-                loginAsAdmin(username, password);
+                const result = validateLogin(username, password, 'admin');
+                if (result.success) {
+                    window.location.href = 'admin-dashboard.html';
+                } else {
+                    loginError.style.display = 'block';
+                    setTimeout(() => {
+                        loginError.style.display = 'none';
+                    }, 3000);
+                }
             });
         });
     </script>
