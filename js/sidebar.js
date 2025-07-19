@@ -95,6 +95,7 @@ function addVersionToSidebar() {
         font-size: 0.8rem;
         text-align: center;
         padding-top: 10px;
+        font-weight: 500;
     `;
     versionElement.innerHTML = '<span>Version: 1.0.01</span>';
     

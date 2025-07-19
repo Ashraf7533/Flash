@@ -130,7 +130,6 @@ async function loadPhotoGallery() {
             </div>
             <div class="photo-info">
                 <div class="photo-date">Uploaded: ${formatDate(photo.uploadDate)}</div>
-                <div class="photo-uploader">By: ${photo.uploadedBy}</div>
             </div>
         `;
         
