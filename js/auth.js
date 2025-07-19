@@ -217,17 +217,11 @@ function validateLogin(username, password, userType) {
     const members = getAllMembers();
     
     if (userType === 'admin') {
-        // Check if it's the admin account
-        const admin = members.find(member => 
-            member.username === username && 
-            member.password === password && 
-            member.isAdmin === true
-        );
-        
-        if (admin) {
-            localStorage.setItem('username', username);
+        // For the admin account, use hardcoded GitHub credentials
+        if (username === 'admin' && password === 'github') {
+            localStorage.setItem('username', 'FlashRC12'); // Still use original admin account internally
             localStorage.setItem('userType', 'admin');
-            addActiveSession(username, 'admin');
+            addActiveSession('FlashRC12', 'admin');
             return { success: true, message: 'Admin login successful' };
         }
     } else {
@@ -642,5 +636,51 @@ function getDashboardStats() {
         activeTrainings,
         upcomingEvents,
         totalPayments
+    };
+}
+
+// Admin specific statistics for admin dashboard
+function getAdminStats() {
+    const members = getAllMembers();
+    const trainings = getAllTrainings();
+    
+    // Count members (excluding admin)
+    const memberCount = members.filter(m => !m.isAdmin).length;
+    
+    // Count current trainings
+    let currentTrainingsCount = 0;
+    Object.values(trainings).forEach(userTrainings => {
+        if (userTrainings.current) {
+            currentTrainingsCount += userTrainings.current.length;
+        }
+    });
+    
+    // Count completed trainings (from past sessions)
+    let completedTrainingsCount = 0;
+    Object.values(trainings).forEach(userTrainings => {
+        if (userTrainings.past) {
+            completedTrainingsCount += userTrainings.past.length;
+        }
+        // Also count completed sessions from current trainings
+        if (userTrainings.current) {
+            userTrainings.current.forEach(training => {
+                if (training.morning && training.morning.status === 'completed') {
+                    completedTrainingsCount++;
+                }
+                if (training.evening && training.evening.status === 'completed') {
+                    completedTrainingsCount++;
+                }
+            });
+        }
+    });
+    
+    // Total trainings
+    const totalTrainingsCount = currentTrainingsCount + completedTrainingsCount;
+    
+    return {
+        memberCount,
+        currentTrainingsCount,
+        completedTrainingsCount,
+        totalTrainingsCount
     };
 }

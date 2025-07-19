@@ -11,6 +11,34 @@ function getAllMembers() {
     return JSON.parse(membersData);
 }
 
+// Function to get all members with their training data
+function getAllMembersWithTrainings() {
+    try {
+        // Get all members
+        const members = getAllMembers().filter(member => !member.isAdmin);
+        
+        // Get all trainings
+        const trainings = JSON.parse(localStorage.getItem('trainings')) || {};
+        
+        // Combine member data with their training data
+        const membersWithTrainings = members.map(member => {
+            const username = member.username;
+            const memberTrainings = trainings[username] || { current: [], past: [] };
+            
+            return {
+                ...member,
+                currentTrainings: memberTrainings.current || [],
+                pastTrainings: memberTrainings.past || []
+            };
+        });
+        
+        return membersWithTrainings;
+    } catch (error) {
+        console.error('Error getting members with trainings:', error);
+        return [];
+    }
+}
+
 // Function to add a new member
 function addMember(memberData) {
     // Get current members
