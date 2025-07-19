@@ -1,922 +1,646 @@
-// Authentication functions for Flash Running Club
+// Authentication and core functionality for Flash Running Club
 
-// Admin credentials
-const adminCredentials = {
-    username: 'FlashRC12',
-    password: 'Flash12'
-};
+// Store active sessions to support multiple devices
+function initializeActiveSessions() {
+    if (!localStorage.getItem('activeSessions')) {
+        localStorage.setItem('activeSessions', JSON.stringify({}));
+    }
+}
 
-// Device limits
-const DEVICE_LIMITS = {
-    admin: 5,
-    member: 1
-};
-
-// Session management
+// Generate session ID
 function generateSessionId() {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
 
-function getActiveSessions(username) {
-    const sessions = JSON.parse(localStorage.getItem('activeSessions')) || {};
-    return sessions[username] || [];
-}
-
+// Add session to active sessions
 function addActiveSession(username, userType) {
     const sessions = JSON.parse(localStorage.getItem('activeSessions')) || {};
-    const userSessions = sessions[username] || [];
+    if (!sessions[username]) {
+        sessions[username] = [];
+    }
     
     const sessionId = generateSessionId();
-    const newSession = {
+    sessions[username].push({
         sessionId: sessionId,
-        timestamp: Date.now(),
+        loginTime: new Date().toISOString(),
         userAgent: navigator.userAgent,
         userType: userType
-    };
+    });
     
-    userSessions.push(newSession);
-    sessions[username] = userSessions;
     localStorage.setItem('activeSessions', JSON.stringify(sessions));
     localStorage.setItem('currentSessionId', sessionId);
-    
     return sessionId;
 }
 
-function removeActiveSession(username, sessionId) {
-    const sessions = JSON.parse(localStorage.getItem('activeSessions')) || {};
-    if (sessions[username]) {
-        sessions[username] = sessions[username].filter(session => session.sessionId !== sessionId);
-        if (sessions[username].length === 0) {
-            delete sessions[username];
-        }
-        localStorage.setItem('activeSessions', JSON.stringify(sessions));
-    }
-}
-
-function cleanupOldSessions(username, userType) {
-    const sessions = JSON.parse(localStorage.getItem('activeSessions')) || {};
-    const userSessions = sessions[username] || [];
-    const limit = DEVICE_LIMITS[userType];
-    
-    // Sort by timestamp (newest first)
-    userSessions.sort((a, b) => b.timestamp - a.timestamp);
-    
-    // Keep only the allowed number of sessions
-    const validSessions = userSessions.slice(0, limit);
-    
-    if (validSessions.length > 0) {
-        sessions[username] = validSessions;
-    } else {
-        delete sessions[username];
-    }
-    
-    localStorage.setItem('activeSessions', JSON.stringify(sessions));
-}
-
-function logoutAllSessions(username) {
-    const sessions = JSON.parse(localStorage.getItem('activeSessions')) || {};
-    delete sessions[username];
-    localStorage.setItem('activeSessions', JSON.stringify(sessions));
-}
-
-function checkDeviceLimit(username, userType) {
-    const activeSessions = getActiveSessions(username);
-    const limit = DEVICE_LIMITS[userType];
-    
-    return activeSessions.length < limit;
-}
-
-function forceLogoutOldestSession(username, userType) {
-    const sessions = JSON.parse(localStorage.getItem('activeSessions')) || {};
-    const userSessions = sessions[username] || [];
-    
-    if (userSessions.length > 0) {
-        // Sort by timestamp (oldest first)
-        userSessions.sort((a, b) => a.timestamp - b.timestamp);
-        
-        // Remove the oldest session
-        const removedSession = userSessions.shift();
-        
-        if (userSessions.length > 0) {
-            sessions[username] = userSessions;
-        } else {
-            delete sessions[username];
-        }
-        
-        localStorage.setItem('activeSessions', JSON.stringify(sessions));
-        return removedSession;
-    }
-    
-    return null;
-}
-
-// Member database - starts empty, only admin can add members
-let memberDb = JSON.parse(localStorage.getItem('memberDb')) || [];
-
-// Initialize empty member database if not already stored
-if (!localStorage.getItem('memberDb')) {
-    localStorage.setItem('memberDb', JSON.stringify(memberDb));
-}
-
-// Training database structure - starts empty
-if (!localStorage.getItem('trainings')) {
-    const initialTrainings = {};
-    localStorage.setItem('trainings', JSON.stringify(initialTrainings));
-}
-
-// Events database structure
-if (!localStorage.getItem('events')) {
-    const initialEvents = [
-        {
-            id: 1,
-            date: '2023-06-10',
-            time: '08:00',
-            title: 'Club 5K Race',
-            location: 'City Park, Main Entrance',
-            description: 'Monthly club 5K race at City Park. All members welcome.'
-        },
-        {
-            id: 2,
-            date: '2023-06-25',
-            time: '07:30',
-            title: 'Half Marathon',
-            location: 'Downtown, Starting at Central Square',
-            description: 'Annual Flash Running Club Half Marathon. Register by June 15.'
-        },
-        {
-            id: 3,
-            date: '2023-07-05',
-            time: '18:00',
-            title: 'Track Meet',
-            location: 'City Stadium, Track Field',
-            description: 'Evening track meet with 100m, 400m, 800m, and 1 mile events.'
-        }
-    ];
-    localStorage.setItem('events', JSON.stringify(initialEvents));
-}
-
-/**
- * Admin login function 
- * @param {string} username - Admin username
- * @param {string} password - Admin password
- */
-function loginAsAdmin(username, password) {
-    const loginError = document.getElementById('loginError');
-    
-    // Clear previous error
-    loginError.style.display = 'none';
-    
-    // Check admin credentials
-    if (username === adminCredentials.username && password === adminCredentials.password) {
-        // Check device limit
-        if (!checkDeviceLimit(username, 'admin')) {
-            // Force logout oldest session if at limit
-            const removedSession = forceLogoutOldestSession(username, 'admin');
-            if (removedSession) {
-                console.log('Device limit reached. Logged out oldest session:', removedSession.sessionId);
-            }
-        }
-        
-        // Add new active session
-        const sessionId = addActiveSession(username, 'admin');
-        
-        // Store admin info in localStorage
-        localStorage.setItem('username', 'FlashRC12');
-        localStorage.setItem('userType', 'admin');
-        
-        // Redirect to admin dashboard
-        window.location.href = 'admin-dashboard.html';
-    } else {
-        loginError.style.display = 'block';
-    }
-}
-
-/**
- * Verify member credentials from admin dashboard
- * @param {string} username - The member's username
- * @param {string} password - The member's password
- * @returns {boolean} - Whether credentials are valid
- */
-function verifyMemberCredentials(username, password) {
-    const members = JSON.parse(localStorage.getItem('memberDb')) || [];
-    const validMember = members.find(member => 
-        member.username === username && member.password === password);
-    
-    if (validMember) {
-        // Store member credentials temporarily in sessionStorage
-        sessionStorage.setItem('pendingUsername', username);
-        sessionStorage.setItem('pendingPassword', password);
-        return true;
-    }
-    return false;
-}
-
-/**
- * Login as a member
- * @param {string} username - The member's username
- * @param {string} password - The member's password
- */
-function loginAsMember(username, password) {
-    const loginError = document.getElementById('loginError');
-    
-    // Clear previous error
-    loginError.style.display = 'none';
-    
-    // For debugging
-    console.log('Attempting login for:', username);
-    
-    // Validate member credentials
-    const members = JSON.parse(localStorage.getItem('memberDb')) || [];
-    const validMember = members.find(member => 
-        member.username === username && member.password === password);
-    
-    if (validMember) {
-        console.log('Valid member found:', validMember.username);
-        
-        // Check device limit for members (1 device only)
-        if (!checkDeviceLimit(username, 'member')) {
-            // Show device limit error with logout option
-            const confirmLogout = confirm(
-                'Account is already logged in on another device. Only one device is allowed for members.\n\n' +
-                'Would you like to logout from all devices and login here?'
-            );
-            
-            if (confirmLogout) {
-                // Force logout all sessions for this member
-                logoutAllSessions(username);
-                
-                // Continue with login
-            } else {
-                loginError.textContent = 'Login cancelled. Account is still active on another device.';
-                loginError.style.display = 'block';
-                return;
-            }
-        }
-        
-        // Add new active session
-        const sessionId = addActiveSession(username, 'member');
-        
-        // Store login info in localStorage
-        localStorage.setItem('username', username);
-        localStorage.setItem('userType', 'member');
-        console.log('Login successful, redirecting to dashboard');
-        
-        // Redirect to member dashboard with a slight delay to ensure localStorage is set
-        setTimeout(function() {
-            window.location.href = 'member-dashboard.html';
-        }, 100);
-    } else {
-        console.log('Invalid login attempt');
-        loginError.textContent = 'Invalid username or password.';
-        loginError.style.display = 'block';
-    }
-}
-
-/**
- * Logout function - clears localStorage and redirects to home
- */
-function logout() {
+// Remove current session
+function removeCurrentSession() {
     const username = localStorage.getItem('username');
-    const sessionId = localStorage.getItem('currentSessionId');
+    const currentSessionId = localStorage.getItem('currentSessionId');
     
-    // Remove the current session from active sessions
-    if (username && sessionId) {
-        removeActiveSession(username, sessionId);
+    if (username && currentSessionId) {
+        const sessions = JSON.parse(localStorage.getItem('activeSessions')) || {};
+        if (sessions[username]) {
+            sessions[username] = sessions[username].filter(session => session.sessionId !== currentSessionId);
+            if (sessions[username].length === 0) {
+                delete sessions[username];
+            }
+            localStorage.setItem('activeSessions', JSON.stringify(sessions));
+        }
     }
     
-    // Clear local storage
+    // Clear current session data
     localStorage.removeItem('username');
     localStorage.removeItem('userType');
     localStorage.removeItem('currentSessionId');
-    
-    // Redirect to home
-    window.location.href = 'index.html';
 }
 
-/**
- * Add a new member
- * @param {Object} memberData - Member data including username, password, email, phone
- * @returns {boolean} - Whether the member was added successfully
- */
-function addMember(memberData) {
-    // Get current members
-    const members = JSON.parse(localStorage.getItem('memberDb')) || [];
+// Remove all sessions for a user
+function removeAllSessions(username) {
+    const sessions = JSON.parse(localStorage.getItem('activeSessions')) || {};
+    delete sessions[username];
+    localStorage.setItem('activeSessions', JSON.stringify(sessions));
     
-    // Check if username already exists
-    if (members.some(member => member.username === memberData.username)) {
-        return false;
+    // If it's the current user, also clear current session data
+    if (localStorage.getItem('username') === username) {
+        localStorage.removeItem('username');
+        localStorage.removeItem('userType');
+        localStorage.removeItem('currentSessionId');
     }
-    
-    // Add join date if not provided
-    if (!memberData.joinDate) {
-        const today = new Date();
-        memberData.joinDate = today.toISOString().split('T')[0];
-    }
-    
-    // Add to members array
-    members.push(memberData);
-    
-    // Save back to localStorage
-    localStorage.setItem('memberDb', JSON.stringify(members));
-    
-    // Initialize training record for the new member
-    const trainings = JSON.parse(localStorage.getItem('trainings')) || {};
-    trainings[memberData.username] = { current: [], past: [] };
-    localStorage.setItem('trainings', JSON.stringify(trainings));
-    
-    return true;
 }
 
-/**
- * Update an existing member
- * @param {string} username - Original username of the member to update
- * @param {Object} memberData - New member data
- * @returns {boolean} - Whether the member was updated successfully
- */
-function updateMember(username, memberData) {
-    // Get current members
-    const members = JSON.parse(localStorage.getItem('memberDb')) || [];
+// Initialize the database with default admin and sample members
+function initializeDatabase() {
+    // Initialize active sessions
+    initializeActiveSessions();
     
-    // Find the member
-    const memberIndex = members.findIndex(member => member.username === username);
-    if (memberIndex === -1) {
-        return false;
+    // Check if memberDb exists, if not create it with default data
+    if (!localStorage.getItem('memberDb')) {
+        const defaultMembers = [
+            {
+                username: 'FlashRC12',
+                password: 'Flash12',
+                email: 'admin@flashrunningclub.com',
+                phone: '555-000-0000',
+                fullName: 'Flash Running Club Admin',
+                joinDate: '2024-01-01',
+                isAdmin: true
+            },
+            {
+                username: 'john_doe',
+                password: 'password123',
+                email: 'john@example.com',
+                phone: '555-123-4567',
+                fullName: 'John Doe',
+                joinDate: '2024-01-15'
+            },
+            {
+                username: 'jane_smith',
+                password: 'mypassword',
+                email: 'jane@example.com',
+                phone: '555-987-6543',
+                fullName: 'Jane Smith',
+                joinDate: '2024-02-01'
+            }
+        ];
+        localStorage.setItem('memberDb', JSON.stringify(defaultMembers));
+        console.log('Database initialized with default data');
     }
     
-    // If username is changing, need to update training records too
-    if (memberData.username !== username) {
-        // Check if the new username already exists
-        if (members.some((member, index) => index !== memberIndex && member.username === memberData.username)) {
-            return false;
-        }
-        
-        // Update training records
-        const trainings = JSON.parse(localStorage.getItem('trainings')) || {};
-        trainings[memberData.username] = trainings[username];
-        delete trainings[username];
-        localStorage.setItem('trainings', JSON.stringify(trainings));
+    // Initialize trainings if not exists
+    if (!localStorage.getItem('trainings')) {
+        localStorage.setItem('trainings', JSON.stringify({}));
     }
     
-    // Update member info
-    members[memberIndex] = memberData;
+    // Initialize events if not exists
+    if (!localStorage.getItem('events')) {
+        const defaultEvents = [
+            {
+                id: 1,
+                title: 'Morning 5K Run',
+                date: '2024-12-25',
+                time: '06:00',
+                location: 'Central Park',
+                description: 'Join us for a festive Christmas morning run!'
+            },
+            {
+                id: 2,
+                title: 'New Year Marathon Training',
+                date: '2025-01-01',
+                time: '07:00',
+                location: 'Running Track',
+                description: 'Start the new year with intensive marathon training session.'
+            }
+        ];
+        localStorage.setItem('events', JSON.stringify(defaultEvents));
+    }
     
-    // Save back to localStorage
-    localStorage.setItem('memberDb', JSON.stringify(members));
-    
-    return true;
+    // Initialize photos if not exists
+    if (!localStorage.getItem('photos')) {
+        localStorage.setItem('photos', JSON.stringify([]));
+    }
 }
 
-/**
- * Delete a member
- * @param {string} username - Username of the member to delete
- * @returns {boolean} - Whether the member was deleted successfully
- */
-function deleteMember(username) {
-    // Get current members
-    const members = JSON.parse(localStorage.getItem('memberDb')) || [];
-    
-    // Find the member
-    const memberIndex = members.findIndex(member => member.username === username);
-    if (memberIndex === -1) {
-        return false;
-    }
-    
-    // Remove from members array
-    members.splice(memberIndex, 1);
-    
-    // Save back to localStorage
-    localStorage.setItem('memberDb', JSON.stringify(members));
-    
-    // Remove training records
-    const trainings = JSON.parse(localStorage.getItem('trainings')) || {};
-    delete trainings[username];
-    localStorage.setItem('trainings', JSON.stringify(trainings));
-    
-    return true;
-}
-
-/**
- * Get all members
- * @returns {Array} - Array of all members
- */
+// Get all members from localStorage
 function getAllMembers() {
     return JSON.parse(localStorage.getItem('memberDb')) || [];
 }
 
-/**
- * Add a training to a member
- * @param {string} memberUsername - The member's username
- * @param {string} trainingDate - Date of the training (YYYY-MM-DD)
- * @param {Object} morningSesssion - Morning session details {name, description}
- * @param {Object} eveningSession - Evening session details {name, description}
- * @returns {boolean} - Whether the training was added successfully
- */
-function addMemberTraining(memberUsername, trainingDate, morningSession, eveningSession) {
-    // Get current trainings
-    const trainings = JSON.parse(localStorage.getItem('trainings')) || {};
-    
-    // Initialize if not exist
-    if (!trainings[memberUsername]) {
-        trainings[memberUsername] = { current: [], past: [] };
-    }
-    
-    // Generate new training ID
-    const newId = Date.now();
-    
-    // Add completed property to sessions if they exist
-    if (morningSession) {
-        morningSession.completed = false;
-    }
-    
-    if (eveningSession) {
-        eveningSession.completed = false;
-    }
-    
-    // Add new training
-    trainings[memberUsername].current.push({
-        id: newId,
-        date: trainingDate,
-        morningSession: morningSession || null,
-        eveningSession: eveningSession || null
-    });
-    
-    // Save back to localStorage
-    localStorage.setItem('trainings', JSON.stringify(trainings));
-    return true;
+// Get member by username
+function getMemberByUsername(username) {
+    const members = getAllMembers();
+    return members.find(member => member.username === username);
 }
 
-/**
- * Mark a specific session of a training as completed or incomplete permanently
- * @param {string} memberUsername - The member's username
- * @param {number} trainingId - ID of the training
- * @param {string} sessionType - Either 'morning' or 'evening'
- * @param {boolean} isCompleted - Whether the session is completed or not
- * @param {boolean} isPermanent - Whether the status should be permanent
- * @returns {boolean} - Whether the session was marked successfully
- */
-function updateSessionStatus(memberUsername, trainingId, sessionType, isCompleted, isPermanent = false) {
-    // Get current trainings
+// Add new member
+function addMember(memberData) {
+    const members = getAllMembers();
+    
+    // Check if username already exists
+    if (members.find(member => member.username === memberData.username)) {
+        return { success: false, message: 'Username already exists' };
+    }
+    
+    // Add join date if not provided
+    if (!memberData.joinDate) {
+        memberData.joinDate = new Date().toISOString().split('T')[0];
+    }
+    
+    members.push(memberData);
+    localStorage.setItem('memberDb', JSON.stringify(members));
+    
+    return { success: true, message: 'Member added successfully' };
+}
+
+// Update member data
+function updateMember(username, updatedData) {
+    const members = getAllMembers();
+    const memberIndex = members.findIndex(member => member.username === username);
+    
+    if (memberIndex === -1) {
+        return { success: false, message: 'Member not found' };
+    }
+    
+    // Preserve username and joinDate
+    updatedData.username = username;
+    updatedData.joinDate = members[memberIndex].joinDate;
+    
+    members[memberIndex] = { ...members[memberIndex], ...updatedData };
+    localStorage.setItem('memberDb', JSON.stringify(members));
+    
+    return { success: true, message: 'Member updated successfully' };
+}
+
+// Delete member
+function deleteMember(username) {
+    const members = getAllMembers();
+    const updatedMembers = members.filter(member => member.username !== username);
+    
+    if (members.length === updatedMembers.length) {
+        return { success: false, message: 'Member not found' };
+    }
+    
+    localStorage.setItem('memberDb', JSON.stringify(updatedMembers));
+    
+    // Also remove member's training data
     const trainings = JSON.parse(localStorage.getItem('trainings')) || {};
+    delete trainings[username];
+    localStorage.setItem('trainings', JSON.stringify(trainings));
     
-    // Check if member and training exist
-    if (!trainings[memberUsername] || !trainings[memberUsername].current) {
-        return false;
-    }
+    // Remove all sessions for this user
+    removeAllSessions(username);
     
-    // Find training index
-    const trainingIndex = trainings[memberUsername].current.findIndex(t => t.id === trainingId);
-    if (trainingIndex === -1) {
-        return false;
-    }
+    return { success: true, message: 'Member deleted successfully' };
+}
+
+// Validate login credentials
+function validateLogin(username, password, userType) {
+    const members = getAllMembers();
     
-    // Get the training
-    const training = trainings[memberUsername].current[trainingIndex];
-    
-    // Mark the specific session as completed or incomplete and set permanent flag
-    if (sessionType === 'morning' && training.morningSession) {
-        training.morningSession.completed = isCompleted;
-        training.morningSession.permanent = isPermanent;
-    } else if (sessionType === 'evening' && training.eveningSession) {
-        training.eveningSession.completed = isCompleted;
-        training.eveningSession.permanent = isPermanent;
+    if (userType === 'admin') {
+        // Check if it's the admin account
+        const admin = members.find(member => 
+            member.username === username && 
+            member.password === password && 
+            member.isAdmin === true
+        );
+        
+        if (admin) {
+            localStorage.setItem('username', username);
+            localStorage.setItem('userType', 'admin');
+            addActiveSession(username, 'admin');
+            return { success: true, message: 'Admin login successful' };
+        }
     } else {
-        return false;
-    }
-    
-    // Check if both sessions have a permanent status (either complete or incomplete)
-    const morningPermanent = !training.morningSession || training.morningSession.permanent === true;
-    const eveningPermanent = !training.eveningSession || training.eveningSession.permanent === true;
-    
-    // Only move to past if both sessions have permanent status
-    if (morningPermanent && eveningPermanent) {
-        // Remove from current
-        trainings[memberUsername].current.splice(trainingIndex, 1);
+        // Check member credentials
+        const member = members.find(member => 
+            member.username === username && 
+            member.password === password && 
+            !member.isAdmin
+        );
         
-        // Add to past
-        if (!trainings[memberUsername].past) {
-            trainings[memberUsername].past = [];
-        }
-        trainings[memberUsername].past.push(training);
-    } else if (!isPermanent) {
-        // For non-permanent updates, use the old behavior
-        // Check if both sessions are completed
-        const morningCompleted = !training.morningSession || training.morningSession.completed;
-        const eveningCompleted = !training.eveningSession || training.eveningSession.completed;
-        
-        if (morningCompleted && eveningCompleted) {
-            // If both sessions are completed, move the training to past
-            trainings[memberUsername].current.splice(trainingIndex, 1);
-            
-            // Add to past
-            if (!trainings[memberUsername].past) {
-                trainings[memberUsername].past = [];
-            }
-            trainings[memberUsername].past.push(training);
+        if (member) {
+            localStorage.setItem('username', username);
+            localStorage.setItem('userType', 'member');
+            addActiveSession(username, 'member');
+            return { success: true, message: 'Member login successful' };
         }
     }
     
-    // Save back to localStorage
-    localStorage.setItem('trainings', JSON.stringify(trainings));
-    return true;
+    return { success: false, message: 'Invalid credentials' };
 }
 
-/**
- * Mark a specific session of a training as completed
- * @param {string} memberUsername - The member's username
- * @param {number} trainingId - ID of the training
- * @param {string} sessionType - Either 'morning' or 'evening'
- * @returns {boolean} - Whether the session was marked as completed
- */
-function completeTrainingSession(memberUsername, trainingId, sessionType) {
-    return updateSessionStatus(memberUsername, trainingId, sessionType, true, false);
+// Check if user is logged in
+function isLoggedIn() {
+    return localStorage.getItem('username') !== null;
 }
 
-/**
- * Mark a specific session of a training as completed permanently
- * @param {string} memberUsername - The member's username
- * @param {number} trainingId - ID of the training
- * @param {string} sessionType - Either 'morning' or 'evening'
- * @returns {boolean} - Whether the session was marked as completed permanently
- */
-function completeTrainingSessionPermanently(memberUsername, trainingId, sessionType) {
-    return updateSessionStatus(memberUsername, trainingId, sessionType, true, true);
+// Check if current user is admin
+function isAdmin() {
+    return localStorage.getItem('userType') === 'admin';
 }
 
-/**
- * Mark a specific session of a training as incomplete
- * @param {string} memberUsername - The member's username
- * @param {number} trainingId - ID of the training
- * @param {string} sessionType - Either 'morning' or 'evening'
- * @returns {boolean} - Whether the session was marked as incomplete
- */
-function markSessionIncomplete(memberUsername, trainingId, sessionType) {
-    return updateSessionStatus(memberUsername, trainingId, sessionType, false, false);
-}
-
-/**
- * Mark a specific session of a training as incomplete permanently
- * @param {string} memberUsername - The member's username
- * @param {number} trainingId - ID of the training
- * @param {string} sessionType - Either 'morning' or 'evening'
- * @returns {boolean} - Whether the session was marked as incomplete permanently
- */
-function markSessionIncompletePermanently(memberUsername, trainingId, sessionType) {
-    return updateSessionStatus(memberUsername, trainingId, sessionType, false, true);
-}
-
-/**
- * Check if a session status is permanent and cannot be changed
- * @param {string} memberUsername - The member's username
- * @param {number} trainingId - ID of the training
- * @param {string} sessionType - Either 'morning' or 'evening'
- * @returns {boolean} - Whether the session status is permanent
- */
-function isSessionStatusPermanent(memberUsername, trainingId, sessionType) {
-    // Get trainings data
-    const trainings = JSON.parse(localStorage.getItem('trainings')) || {};
+// Get current user info
+function getCurrentUser() {
+    const username = localStorage.getItem('username');
+    const userType = localStorage.getItem('userType');
     
-    // Check in current trainings
-    if (trainings[memberUsername]?.current) {
-        const training = trainings[memberUsername].current.find(t => t.id === trainingId);
-        if (training) {
-            if (sessionType === 'morning' && training.morningSession) {
-                return training.morningSession.permanent === true;
-            } else if (sessionType === 'evening' && training.eveningSession) {
-                return training.eveningSession.permanent === true;
-            }
-        }
-    }
-    
-    // Check in past trainings
-    if (trainings[memberUsername]?.past) {
-        const training = trainings[memberUsername].past.find(t => t.id === trainingId);
-        if (training) {
-            if (sessionType === 'morning' && training.morningSession) {
-                return training.morningSession.permanent === true;
-            } else if (sessionType === 'evening' && training.eveningSession) {
-                return training.eveningSession.permanent === true;
-            }
-        }
-    }
-    
-    return false;
-}
-
-/**
- * Mark a complete training as completed (legacy function)
- * @param {string} memberUsername - The member's username
- * @param {number} trainingId - ID of the training to mark as completed
- * @returns {boolean} - Whether the training was marked as completed
- */
-function completeTraining(memberUsername, trainingId) {
-    // Get current trainings
-    const trainings = JSON.parse(localStorage.getItem('trainings')) || {};
-    
-    // Check if member and training exist
-    if (!trainings[memberUsername] || !trainings[memberUsername].current) {
-        return false;
-    }
-    
-    // Find training index
-    const trainingIndex = trainings[memberUsername].current.findIndex(t => t.id === trainingId);
-    if (trainingIndex === -1) {
-        return false;
-    }
-    
-    // Get the training
-    const training = trainings[memberUsername].current[trainingIndex];
-    
-    // Mark both sessions as completed if they exist
-    if (training.morningSession) {
-        training.morningSession.completed = true;
-    }
-    if (training.eveningSession) {
-        training.eveningSession.completed = true;
-    }
-    
-    // Remove from current
-    trainings[memberUsername].current.splice(trainingIndex, 1);
-    
-    // Add to past
-    if (!trainings[memberUsername].past) {
-        trainings[memberUsername].past = [];
-    }
-    trainings[memberUsername].past.push(training);
-    
-    // Save back to localStorage
-    localStorage.setItem('trainings', JSON.stringify(trainings));
-    return true;
-}
-
-/**
- * Get member's trainings
- * @param {string} memberUsername - The member's username
- * @returns {Object} - Current and past trainings for the member
- */
-function getMemberTrainings(memberUsername) {
-    const trainings = JSON.parse(localStorage.getItem('trainings')) || {};
-    
-    if (!trainings[memberUsername]) {
-        return { current: [], past: [] };
-    }
+    if (!username) return null;
     
     return {
-        current: trainings[memberUsername].current || [],
-        past: trainings[memberUsername].past || []
+        username: username,
+        userType: userType,
+        memberData: getMemberByUsername(username)
     };
 }
 
-/**
- * Get all members with their training status
- * @returns {Array} - Array of members with training info
- */
-function getAllMembersWithTrainings() {
-    const members = JSON.parse(localStorage.getItem('memberDb')) || [];
-    const trainings = JSON.parse(localStorage.getItem('trainings')) || {};
-    
-    return members.map(member => {
-        const memberTrainings = trainings[member.username] || { current: [], past: [] };
-        return {
-            ...member,
-            currentTrainings: memberTrainings.current || [],
-            pastTrainings: memberTrainings.past || []
-        };
-    });
+// Logout current session
+function logout() {
+    removeCurrentSession();
+    window.location.href = 'index.html';
 }
 
-/**
- * Get statistics for admin dashboard
- * @returns {Object} - Statistics object with counts
- */
-function getAdminStats() {
-    const members = JSON.parse(localStorage.getItem('memberDb')) || [];
-    const trainings = JSON.parse(localStorage.getItem('trainings')) || {};
-    const events = JSON.parse(localStorage.getItem('events')) || [];
+// Logout from all devices
+function logoutAll() {
+    const username = localStorage.getItem('username');
+    if (username) {
+        removeAllSessions(username);
+        window.location.href = 'index.html';
+    }
+}
+
+// Enhanced alert function with theme styling
+function showAlert(message, type = 'info') {
+    // Remove any existing alerts
+    const existingAlerts = document.querySelectorAll('.custom-alert');
+    existingAlerts.forEach(alert => alert.remove());
     
-    let totalCurrentTrainings = 0;
-    let totalCompletedTrainings = 0;
+    // Create alert element
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `custom-alert notification-theme`;
+    alertDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 10000;
+        min-width: 300px;
+        max-width: 500px;
+        animation: slideInRight 0.3s ease-out;
+    `;
     
-    Object.values(trainings).forEach(memberTraining => {
-        totalCurrentTrainings += (memberTraining.current || []).length;
-        totalCompletedTrainings += (memberTraining.past || []).length;
-    });
+    // Add icon based on type
+    let icon = 'fas fa-info-circle';
+    if (type === 'success') icon = 'fas fa-check-circle';
+    else if (type === 'error') icon = 'fas fa-exclamation-circle';
+    else if (type === 'warning') icon = 'fas fa-exclamation-triangle';
     
-    return {
-        memberCount: members.length,
-        currentTrainingsCount: totalCurrentTrainings,
-        completedTrainingsCount: totalCompletedTrainings,
-        totalTrainingsCount: totalCurrentTrainings + totalCompletedTrainings,
-        eventsCount: events.length
+    alertDiv.innerHTML = `<i class="${icon}"></i> ${message}`;
+    
+    document.body.appendChild(alertDiv);
+    
+    // Auto remove after 4 seconds
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.style.animation = 'slideOutRight 0.3s ease-in forwards';
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 300);
+        }
+    }, 4000);
+}
+
+// Enhanced confirm function with theme styling
+function showConfirm(message, callback) {
+    // Remove any existing confirms
+    const existingConfirms = document.querySelectorAll('.custom-confirm');
+    existingConfirms.forEach(confirm => confirm.remove());
+    
+    // Create overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'custom-confirm';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 10001;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.3s ease-out;
+    `;
+    
+    // Create confirm dialog
+    const confirmDiv = document.createElement('div');
+    confirmDiv.className = 'notification-theme';
+    confirmDiv.style.cssText = `
+        max-width: 400px;
+        margin: 20px;
+        animation: scaleIn 0.3s ease-out;
+        text-align: center;
+    `;
+    
+    confirmDiv.innerHTML = `
+        <div style="margin-bottom: 20px;">
+            <i class="fas fa-question-circle" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+            ${message}
+        </div>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button class="btn btn-success" id="confirmYes">Yes</button>
+            <button class="btn btn-secondary" id="confirmNo">No</button>
+        </div>
+    `;
+    
+    overlay.appendChild(confirmDiv);
+    document.body.appendChild(overlay);
+    
+    // Handle button clicks
+    document.getElementById('confirmYes').onclick = () => {
+        overlay.remove();
+        callback(true);
+    };
+    
+    document.getElementById('confirmNo').onclick = () => {
+        overlay.remove();
+        callback(false);
+    };
+    
+    // Handle overlay click
+    overlay.onclick = (e) => {
+        if (e.target === overlay) {
+            overlay.remove();
+            callback(false);
+        }
     };
 }
 
-/**
- * Get all upcoming events
- * @returns {Array} - Array of event objects
- */
+// Add CSS animations
+if (!document.getElementById('authAnimations')) {
+    const style = document.createElement('style');
+    style.id = 'authAnimations';
+    style.textContent = `
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.7);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Initialize database when the script loads
+initializeDatabase();
+
+// Event Management Functions
 function getAllEvents() {
     return JSON.parse(localStorage.getItem('events')) || [];
 }
 
-/**
- * Add a new event
- * @param {Object} eventData - Event data including date, time, title, location, description
- * @returns {boolean} - Whether the event was added successfully
- */
 function addEvent(eventData) {
-    // Get current events
     const events = getAllEvents();
+    const newId = events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 1;
     
-    // Generate new event ID
-    const newId = Date.now();
     eventData.id = newId;
-    
-    // Add to events array
     events.push(eventData);
-    
-    // Sort events by date and time
-    events.sort((a, b) => {
-        const dateA = new Date(`${a.date}T${a.time}`);
-        const dateB = new Date(`${b.date}T${b.time}`);
-        return dateA - dateB;
-    });
-    
-    // Save back to localStorage
     localStorage.setItem('events', JSON.stringify(events));
     
-    return true;
+    return { success: true, message: 'Event added successfully' };
 }
 
-/**
- * Edit an existing event
- * @param {number} eventId - ID of the event to edit
- * @param {Object} eventData - Updated event data
- * @returns {boolean} - Whether the event was updated successfully
- */
-function editEvent(eventId, eventData) {
-    // Get current events
+function updateEvent(eventId, eventData) {
     const events = getAllEvents();
-    
-    // Find the event
     const eventIndex = events.findIndex(event => event.id === eventId);
+    
     if (eventIndex === -1) {
-        return false;
+        return { success: false, message: 'Event not found' };
     }
     
-    // Update event, keeping the original ID
-    eventData.id = eventId;
-    events[eventIndex] = eventData;
-    
-    // Sort events by date and time
-    events.sort((a, b) => {
-        const dateA = new Date(`${a.date}T${a.time}`);
-        const dateB = new Date(`${b.date}T${b.time}`);
-        return dateA - dateB;
-    });
-    
-    // Save back to localStorage
+    events[eventIndex] = { ...events[eventIndex], ...eventData };
     localStorage.setItem('events', JSON.stringify(events));
     
-    return true;
+    return { success: true, message: 'Event updated successfully' };
 }
 
-/**
- * Delete an event
- * @param {number} eventId - ID of the event to delete
- * @returns {boolean} - Whether the event was deleted successfully
- */
 function deleteEvent(eventId) {
-    // Get current events
     const events = getAllEvents();
+    const updatedEvents = events.filter(event => event.id !== eventId);
     
-    // Find the event
-    const eventIndex = events.findIndex(event => event.id === eventId);
-    if (eventIndex === -1) {
+    if (events.length === updatedEvents.length) {
         return false;
     }
     
-    // Remove from events array
-    events.splice(eventIndex, 1);
+    localStorage.setItem('events', JSON.stringify(updatedEvents));
+    return true;
+}
+
+// Training Management Functions
+function getAllTrainings() {
+    return JSON.parse(localStorage.getItem('trainings')) || {};
+}
+
+function getMemberTrainings(username) {
+    const trainings = getAllTrainings();
+    return trainings[username] || { current: [], past: [] };
+}
+
+function addMemberTraining(username, date, morningSession, eveningSession) {
+    const trainings = getAllTrainings();
     
-    // Save back to localStorage
-    localStorage.setItem('events', JSON.stringify(events));
+    if (!trainings[username]) {
+        trainings[username] = { current: [], past: [] };
+    }
+    
+    const newTraining = {
+        id: Date.now(),
+        date: date,
+        morning: {
+            session: morningSession || '',
+            status: 'incomplete',
+            completedAt: null
+        },
+        evening: {
+            session: eveningSession || '',
+            status: 'incomplete',
+            completedAt: null
+        },
+        addedAt: new Date().toISOString()
+    };
+    
+    trainings[username].current.push(newTraining);
+    localStorage.setItem('trainings', JSON.stringify(trainings));
+    
+    return { success: true, message: 'Training added successfully' };
+}
+
+function completeTrainingSession(username, trainingId, sessionType) {
+    const trainings = getAllTrainings();
+    
+    if (!trainings[username]) {
+        return { success: false, message: 'No trainings found for user' };
+    }
+    
+    const training = trainings[username].current.find(t => t.id === trainingId);
+    if (!training) {
+        return { success: false, message: 'Training not found' };
+    }
+    
+    if (sessionType === 'morning' || sessionType === 'evening') {
+        training[sessionType].status = 'completed';
+        training[sessionType].completedAt = new Date().toISOString();
+    }
+    
+    localStorage.setItem('trainings', JSON.stringify(trainings));
+    return { success: true, message: 'Session completed successfully' };
+}
+
+function deleteMemberTraining(username, date) {
+    const trainings = getAllTrainings();
+    
+    if (!trainings[username]) {
+        return false;
+    }
+    
+    // Remove from current trainings
+    trainings[username].current = trainings[username].current.filter(t => t.date !== date);
+    
+    // Remove from past trainings
+    trainings[username].past = trainings[username].past.filter(t => t.date !== date);
+    
+    localStorage.setItem('trainings', JSON.stringify(trainings));
+    return true;
+}
+
+// Payment Management Functions
+function getAllPayments() {
+    return JSON.parse(localStorage.getItem('payments')) || {};
+}
+
+function getMemberPayments(username) {
+    const payments = getAllPayments();
+    return payments[username] || [];
+}
+
+function addPaymentRecord(username, amount, date, description) {
+    const payments = getAllPayments();
+    
+    if (!payments[username]) {
+        payments[username] = [];
+    }
+    
+    const newPayment = {
+        id: Date.now(),
+        amount: parseFloat(amount),
+        date: date,
+        description: description || '',
+        addedAt: new Date().toISOString()
+    };
+    
+    payments[username].push(newPayment);
+    localStorage.setItem('payments', JSON.stringify(payments));
+    
+    return { success: true, message: 'Payment record added successfully' };
+}
+
+function deletePaymentRecord(username, paymentId) {
+    const payments = getAllPayments();
+    
+    if (!payments[username]) {
+        return false;
+    }
+    
+    payments[username] = payments[username].filter(p => p.id !== paymentId);
+    localStorage.setItem('payments', JSON.stringify(payments));
     
     return true;
 }
 
-/**
- * Auto-clear past events (runs at midnight)
- * This removes events from the previous day
- */
-function autoClearPastEvents() {
-    // Get current events
+// Dashboard Statistics
+function getDashboardStats() {
+    const members = getAllMembers();
+    const trainings = getAllTrainings();
     const events = getAllEvents();
+    const payments = getAllPayments();
     
-    // Get yesterday's date
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set to beginning of today
+    // Count members (excluding admin)
+    const memberCount = members.filter(m => !m.isAdmin).length;
     
-    // Filter out events that have passed
-    const futureEvents = events.filter(event => {
-        const eventDate = new Date(event.date);
-        eventDate.setHours(0, 0, 0, 0); // Set to beginning of event day
-        return eventDate >= today;
+    // Count active trainings
+    let activeTrainings = 0;
+    Object.values(trainings).forEach(userTrainings => {
+        activeTrainings += userTrainings.current ? userTrainings.current.length : 0;
     });
     
-    // If we've removed any events, save the updated list
-    if (futureEvents.length < events.length) {
-        localStorage.setItem('events', JSON.stringify(futureEvents));
-    }
-}
-
-// Set up auto-clearing of past events at midnight
-function scheduleEventCleanup() {
-    // First, run it once to clear any past events
-    autoClearPastEvents();
+    // Count upcoming events
+    const today = new Date().toISOString().split('T')[0];
+    const upcomingEvents = events.filter(event => event.date >= today).length;
     
-    // Calculate time until next midnight
-    const now = new Date();
-    const midnight = new Date();
-    midnight.setDate(midnight.getDate() + 1);
-    midnight.setHours(0, 0, 0, 0);
-    
-    const timeUntilMidnight = midnight - now;
-    
-    // Schedule the first cleanup at next midnight
-    setTimeout(() => {
-        autoClearPastEvents();
-        
-        // Then set up daily interval (24 hours)
-        setInterval(autoClearPastEvents, 24 * 60 * 60 * 1000);
-    }, timeUntilMidnight);
-}
-
-// Session validation on page load
-function validateCurrentSession() {
-    const username = localStorage.getItem('username');
-    const userType = localStorage.getItem('userType');
-    const sessionId = localStorage.getItem('currentSessionId');
-    
-    console.log('Session validation started');
-    console.log('Username:', username);
-    console.log('User type:', userType);
-    console.log('Session ID:', sessionId);
-    
-    if (username && userType && sessionId) {
-        const activeSessions = getActiveSessions(username);
-        console.log('Active sessions for user:', activeSessions);
-        
-        const currentSession = activeSessions.find(session => session.sessionId === sessionId);
-        
-        if (!currentSession) {
-            // Session not found in active sessions, force logout
-            console.log('Session expired or logged out from another device');
-            localStorage.removeItem('username');
-            localStorage.removeItem('userType');
-            localStorage.removeItem('currentSessionId');
-            
-            // Only redirect if we're not already on a login page
-            if (!window.location.href.includes('login') && !window.location.href.includes('index.html')) {
-                console.log('Redirecting to index page');
-                window.location.href = 'index.html';
-            }
-        } else {
-            console.log('Session validated successfully');
-        }
-    } else {
-        console.log('No session data found');
-    }
-}
-
-// Cleanup sessions older than 30 days
-function cleanupExpiredSessions() {
-    const sessions = JSON.parse(localStorage.getItem('activeSessions')) || {};
-    const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
-    
-    Object.keys(sessions).forEach(username => {
-        sessions[username] = sessions[username].filter(session => 
-            session.timestamp > thirtyDaysAgo
-        );
-        
-        if (sessions[username].length === 0) {
-            delete sessions[username];
-        }
+    // Calculate total payments
+    let totalPayments = 0;
+    Object.values(payments).forEach(userPayments => {
+        userPayments.forEach(payment => {
+            totalPayments += payment.amount;
+        });
     });
     
-    localStorage.setItem('activeSessions', JSON.stringify(sessions));
-}
-
-// Call the scheduler when the page loads
-if (typeof window !== 'undefined') {
-    window.addEventListener('DOMContentLoaded', () => {
-        console.log('DOM content loaded, initializing auth functions');
-        // First validate the current session
-        validateCurrentSession();
-        
-        // Then schedule other maintenance tasks
-        scheduleEventCleanup();
-        cleanupExpiredSessions();
-        
-        console.log('Auth initialization complete');
-    });
+    return {
+        memberCount,
+        activeTrainings,
+        upcomingEvents,
+        totalPayments
+    };
 }
