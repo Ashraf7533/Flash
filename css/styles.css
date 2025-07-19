@@ -25,6 +25,12 @@
     margin: 10px 0 !important;
     box-shadow: 0 4px 12px rgba(250, 204, 21, 0.15) !important;
     font-weight: 500 !important;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2000;
+    max-width: 400px;
+    animation: slideIn 0.3s ease-out;
 }
 
 .notification-theme .fas {
@@ -32,10 +38,33 @@
     margin-right: 8px !important;
 }
 
+/* Mobile notification positioning */
+@media (max-width: 768px) {
+    .notification-theme {
+        top: 80px; /* Account for fixed mobile header */
+        left: 10px;
+        right: 10px;
+        max-width: none;
+    }
+}
+
 /* Base Layout Styles */
 * {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+}
+
+/* Prevent horizontal overflow on all elements */
+html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+    width: 100%;
+}
+
+/* Ensure all containers respect viewport */
+.container, .dashboard, .main-content, .card, .table-responsive {
+    max-width: 100%;
     box-sizing: border-box;
 }
 
@@ -133,6 +162,33 @@ body {
     box-shadow: 0 4px 15px rgba(250, 204, 21, 0.3);
 }
 
+/* Save button special effect */
+.btn-save {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.btn-save:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.6s;
+}
+
+.btn-save:hover:before {
+    left: 100%;
+}
+
+.btn-save:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(250, 204, 21, 0.6);
+}
+
 .btn-secondary {
     background: linear-gradient(135deg, #64748b, #475569);
     color: white;
@@ -213,12 +269,16 @@ body {
 .dashboard {
     display: flex;
     min-height: 100vh;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    position: relative;
 }
 
 /* Sidebar Styles */
 .sidebar {
     width: 250px;
-    background: #1f1f1f; /* Black background */
+    background: rgba(31, 31, 31, 0.8); /* 80% opacity black background */
     border-right: 1px solid #333;
     box-shadow: 2px 0 10px rgba(0,0,0,0.2);
     position: fixed;
@@ -231,19 +291,22 @@ body {
 }
 
 .sidebar-header {
-    background: #111111; /* Darker black for header */
-    color: white;
-    padding: 1rem;
+    background: var(--primary-color); /* Yellow for header */
+    color: black;
+    padding: 15px; /* Match the inline style padding */
     display: flex;
     align-items: center;
     justify-content: space-between;
     border-bottom: 1px solid #333;
+    margin: 0;
+    box-sizing: border-box;
 }
 
 .sidebar-logo {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex: 1;
 }
 
 .sidebar-logo img {
@@ -302,6 +365,10 @@ body {
     flex: 1;
     background-color: var(--background-dark);
     min-height: 100vh;
+    width: calc(100% - 250px);
+    max-width: calc(100% - 250px);
+    overflow-x: hidden;
+    box-sizing: border-box;
 }
 
 .content-header {
@@ -324,12 +391,18 @@ body {
     display: none;
     background: var(--primary-color);
     color: black;
-    padding: 1rem;
+    padding: 15px; /* Match sidebar header padding */
     align-items: center;
     justify-content: space-between;
-    position: sticky;
+    position: fixed;
     top: 0;
-    z-index: 999;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 1001;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin: 0;
+    box-sizing: border-box;
 }
 
 .hamburger {
@@ -339,6 +412,11 @@ body {
     cursor: pointer;
     font-size: 1.2rem;
     padding: 0.25rem;
+}
+
+.mobile-logo {
+    display: flex;
+    align-items: center;
 }
 
 /* Card Styles */
@@ -509,6 +587,23 @@ body {
     border-radius: 8px;
     margin-bottom: 1rem;
     border-left: 4px solid;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2000;
+    max-width: 400px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Mobile alert positioning */
+@media (max-width: 768px) {
+    .alert {
+        top: 80px; /* Account for fixed mobile header */
+        left: 10px;
+        right: 10px;
+        max-width: none;
+    }
 }
 
 .alert-success {
@@ -552,10 +647,21 @@ body {
     .main-content {
         margin-left: 0;
         padding: 1rem;
+        padding-top: 4rem; /* Adjusted for mobile header height */
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden; /* Prevent horizontal scroll */
+        box-sizing: border-box;
     }
     
     .mobile-header {
         display: flex;
+        margin: 0;
+        padding: 15px; /* Match sidebar header */
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        height: auto;
     }
     
     .stats-grid {
@@ -577,6 +683,45 @@ body {
     
     .content-header h2 {
         font-size: 1.5rem;
+    }
+    
+    /* Admin dashboard width fix */
+    .dashboard {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+    
+    /* Fix table overflow */
+    .table-responsive {
+        overflow-x: auto;
+        width: 100%;
+        margin: 0;
+    }
+    
+    .table {
+        min-width: 600px; /* Ensure table doesn't get too compressed */
+    }
+    
+    /* Card responsive fixes */
+    .card {
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    /* Prevent any element from exceeding viewport width */
+    * {
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+    
+    /* Fix any potential overflow elements */
+    .content-header, .card-header {
+        width: 100%;
+        max-width: 100%;
+        overflow-wrap: break-word;
     }
 }
 
@@ -1039,6 +1184,30 @@ body {
 
 .shadow-lg {
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+/* Version display fix */
+.version-info {
+    padding: 1rem;
+    text-align: center;
+    color: var(--text-light);
+    font-size: 0.875rem;
+    border-top: 1px solid var(--border-color);
+    margin-top: 2rem;
+    background: rgba(255,255,255,0.5);
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .version-info {
+        margin-bottom: 2rem; /* Add bottom spacing for mobile */
+        padding-bottom: 2rem;
+        margin-left: 0;
+        margin-right: 0;
+    }
 }
 
 /* Print Styles */
