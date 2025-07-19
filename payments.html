@@ -118,6 +118,26 @@
                 <p>Manage monthly payments for all club members</p>
             </div>
             
+            <!-- Admin Payment Account Settings -->
+            <div class="card" id="accountSettingsCard" style="display: none;">
+                <div class="card-header">
+                    <h3>Payment Account Settings</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="accountName">Account Name</label>
+                            <input type="text" id="accountName" class="form-control" placeholder="Enter account name">
+                        </div>
+                        <div class="form-group">
+                            <label for="accountNumber">Account Number</label>
+                            <input type="text" id="accountNumber" class="form-control" placeholder="Enter account number">
+                        </div>
+                    </div>
+                    <button id="saveAccountBtn" class="btn btn-success">Save Account Details</button>
+                </div>
+            </div>
+            
             <div class="card">
                 <div class="card-header">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -301,6 +321,10 @@
                 window.location.href = 'admin-login.html';
                 return;
             }
+            
+            // Show account settings for admin
+            document.getElementById('accountSettingsCard').style.display = 'block';
+            loadAccountSettings();
 
             // Set today's date as default for new payments
             document.getElementById('paymentDate').valueAsDate = new Date();
@@ -314,6 +338,11 @@
             
             document.getElementById('cancelEditBtn').addEventListener('click', function() {
                 editModal.style.display = 'none';
+            });
+            
+            // Save account settings button
+            document.getElementById('saveAccountBtn').addEventListener('click', function() {
+                saveAccountSettings();
             });
             
             // Logout functionality
@@ -597,6 +626,35 @@
             } else {
                 alert(result.message || 'Failed to delete payment');
             }
+        }
+        
+        function loadAccountSettings() {
+            const settings = JSON.parse(localStorage.getItem('paymentAccountSettings')) || {
+                accountName: 'HUSN.F.HAROON',
+                accountNumber: '7704119210101'
+            };
+            
+            document.getElementById('accountName').value = settings.accountName;
+            document.getElementById('accountNumber').value = settings.accountNumber;
+        }
+        
+        function saveAccountSettings() {
+            const accountName = document.getElementById('accountName').value.trim();
+            const accountNumber = document.getElementById('accountNumber').value.trim();
+            
+            if (!accountName || !accountNumber) {
+                showAlert('Please fill in both account name and number', 'error');
+                return;
+            }
+            
+            const settings = {
+                accountName: accountName,
+                accountNumber: accountNumber,
+                updatedAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem('paymentAccountSettings', JSON.stringify(settings));
+            showAlert('Account settings updated successfully!', 'success');
         }
     </script>
 </body>

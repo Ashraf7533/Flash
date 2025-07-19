@@ -152,14 +152,16 @@
                     <h3 class="card-title">Search Events</h3>
                 </div>
                 <div class="card-body">
-                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                        <input type="text" id="searchInput" class="form-control" placeholder="Search events by title, location, or description..." style="flex: 1;">
-                        <select id="eventTypeFilter" class="form-control" style="width: 200px;">
-                            <option value="all">All Events</option>
-                            <option value="future">Future Events</option>
-                            <option value="past">Past Events</option>
-                        </select>
-                        <button id="clearSearch" class="btn btn-secondary" style="background-color: #6c757d; color: white; border: none; padding: 8px 15px; border-radius: 4px;">Clear</button>
+                    <div class="search-filter-container">
+                        <div class="search-filter-row">
+                            <input type="text" id="searchInput" class="search-input" placeholder="Search events by title, location, or description...">
+                            <select id="eventTypeFilter" class="filter-select">
+                                <option value="all">All Events</option>
+                                <option value="future">Future Events</option>
+                                <option value="past">Past Events</option>
+                            </select>
+                            <button id="clearSearch" class="btn btn-secondary" style="background-color: #6c757d; color: white; border: none; padding: 8px 15px; border-radius: 4px;">Clear</button>
+                        </div>
                     </div>
                 </div>
             </div>

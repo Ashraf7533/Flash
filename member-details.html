@@ -548,7 +548,8 @@
             
             // Handle save changes button
             document.querySelector('.save-changes-btn').addEventListener('click', function() {
-                if (confirm('Are you sure you want to save these changes?')) {
+                showConfirm('Are you sure you want to save these changes?', function(confirmed) {
+                    if (confirmed) {
                     const members = getAllMembers();
                     const member = members.find(m => m.username === username);
                     
@@ -638,7 +639,7 @@
                         }
                         
                         // Show success message
-                        document.getElementById('editResultMessage').innerHTML = '<div style="color: green;">Member updated successfully!</div>';
+                        showAlert('Information UPDATED successfully', 'success');
                         
                         // If username changed, need to update URL
                         if (username !== updatedUsername) {
@@ -656,21 +657,25 @@
                             }, 1500);
                         }
                     } else {
-                        document.getElementById('editResultMessage').innerHTML = '<div style="color: red;">Failed to update member. Please try again.</div>';
+                        showAlert('Failed to update member. Please try again.', 'error');
                     }
-                }
+                });
             });
             
             // Handle delete button
             document.querySelector('.delete-member-btn').addEventListener('click', function() {
-                if (confirm(`Are you sure you want to delete member "${username}"? This cannot be undone.`)) {
-                    if (deleteMember(username)) {
-                        alert('Member deleted successfully');
-                        window.location.href = 'members.html';
-                    } else {
-                        alert('Failed to delete member');
+                showConfirm(`Are you sure you want to delete member "${username}"? This cannot be undone.`, function(confirmed) {
+                    if (confirmed) {
+                        if (deleteMember(username)) {
+                            showAlert('Member deleted successfully', 'success');
+                            setTimeout(() => {
+                                window.location.href = 'members.html';
+                            }, 1000);
+                        } else {
+                            showAlert('Failed to delete member', 'error');
+                        }
                     }
-                }
+                });
             });
             
             // Training assignment form has been removed

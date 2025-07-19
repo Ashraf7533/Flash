@@ -100,6 +100,29 @@
                     <h3 class="card-title">Payment History</h3>
                 </div>
                 <div class="card-body">
+                    <!-- Bank Account Information -->
+                    <div style="margin-bottom: 25px; padding: 15px; background-color: #f9f9f9; border-radius: 8px; border-left: 4px solid #facc15;">
+                        <h4 style="margin-top: 0; margin-bottom: 15px; color: #333;">Payment Information</h4>
+                        <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+                            <div style="flex: 1; min-width: 200px;">
+                                <div style="font-weight: bold; margin-bottom: 4px;">Account Name:</div>
+                                <div style="font-family: monospace; font-size: 1.1rem;">HUSN.F.HAROON</div>
+                            </div>
+                            <div style="flex: 1; min-width: 200px;">
+                                <div style="font-weight: bold; margin-bottom: 4px;">Account Number:</div>
+                                <div style="display: flex; align-items: center;">
+                                    <span id="accountNumber" style="font-family: monospace; font-size: 1.1rem; background: white; padding: 8px 12px; border-radius: 4px; border: 1px solid #ddd; margin-right: 8px; flex-grow: 1;">7704119210101</span>
+                                    <button id="copyAccountNumber" style="background-color: #facc15; color: #333; border: none; padding: 8px 10px; border-radius: 4px; cursor: pointer;" title="Copy account number">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                                <div id="copyMessage" style="color: #28a745; font-size: 0.9rem; margin-top: 5px; display: none;">
+                                    <i class="fas fa-check-circle"></i> Copied to clipboard!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Payment Filters -->
                     <div class="payment-filters">
                         <div class="form-group" style="min-width: 150px;">
@@ -157,6 +180,29 @@
                 window.location.href = 'member-dashboard.html#current-trainings';
             });
             
+            // Set up account number copy functionality
+            const copyButton = document.getElementById('copyAccountNumber');
+            const copyMessage = document.getElementById('copyMessage');
+            const accountNumber = document.getElementById('accountNumber');
+            
+            copyButton.addEventListener('click', function() {
+                // Copy account number to clipboard
+                navigator.clipboard.writeText(accountNumber.textContent)
+                    .then(() => {
+                        // Show success message
+                        copyMessage.style.display = 'block';
+                        
+                        // Hide message after 3 seconds
+                        setTimeout(() => {
+                            copyMessage.style.display = 'none';
+                        }, 3000);
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy account number: ', err);
+                        alert('Failed to copy account number. Please try again.');
+                    });
+            });
+            
             // Logout functionality
             document.getElementById('logoutBtn').addEventListener('click', function(e) {
                 e.preventDefault();
@@ -167,14 +213,15 @@
             document.getElementById('logoutAllBtn').addEventListener('click', function(e) {
                 e.preventDefault();
                 const username = localStorage.getItem('username');
-                const confirmLogoutAll = confirm(
-                    'This will logout your account from ALL devices.\n\nAre you sure you want to continue?'
+                showConfirm(
+                    'This will logout your account from ALL devices.\n\nAre you sure you want to continue?',
+                    function(confirmed) {
+                        if (confirmed) {
+                            logoutAllSessions(username);
+                            logout();
+                        }
+                    }
                 );
-                
-                if (confirmLogoutAll) {
-                    logoutAllSessions(username);
-                    logout();
-                }
             });
 
             // Filter year change handler
