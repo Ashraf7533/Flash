@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Member Dashboard - Flash Running Club</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -11,10 +11,10 @@
     <div class="dashboard">
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
-            <div class="sidebar-header" style="background-color: #facc15; display: flex; align-items: center; padding: 15px;">
-                <div id="sidebarAvatar" style="width: 50px; height: 50px; border-radius: 50%; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; margin-right: 10px; font-size: 1.5rem; overflow: hidden; border: 2px solid black; flex-shrink: 0;"></div>
-                <div id="sidebarMemberName" style="color: #000; font-weight: bold; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;"></div>
-                <button class="sidebar-toggle" id="sidebarToggle" style="background: none; border: none; color: #000; cursor: pointer; flex-shrink: 0;">
+            <div class="sidebar-header" style="display: flex; align-items: center; padding: 15px;">
+                <div id="sidebarAvatar" style="width: 50px; height: 50px; border-radius: 50%; background-color: #333; display: flex; align-items: center; justify-content: center; margin-right: 10px; font-size: 1.5rem; overflow: hidden; border: 2px solid #facc15; flex-shrink: 0;"></div>
+                <div id="sidebarMemberName" style="color: #fff; font-weight: bold; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;"></div>
+                <button class="sidebar-toggle" id="sidebarToggle" style="background: none; border: none; color: #fff; cursor: pointer; flex-shrink: 0;">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -59,13 +59,13 @@
             <div class="stats-container" style="margin-bottom: 15px;">
                 <!-- First row: Morning & Evening Sessions -->
                 <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                    <div class="stat-card" style="flex: 1; width: calc(50% - 5px); background-color: white; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 10px; text-align: center;">
+                    <div class="stat-card" style="flex: 1; width: calc(50% - 5px); background-color: white; border-radius: 5px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); padding: 10px; text-align: center;">
                         <div class="stat-icon" style="font-size: 1.2rem; color: #000; margin-bottom: 5px;"><i class="fas fa-sun"></i></div>
                         <div class="stat-value" id="morningSessionsCount" style="font-size: 1.4rem; font-weight: bold; color: #facc15; margin: 5px 0;">0</div>
                         <div class="stat-label" style="color: #666; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Morning Sessions</div>
                     </div>
                     
-                    <div class="stat-card" style="flex: 1; width: calc(50% - 5px); background-color: white; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 10px; text-align: center;">
+                    <div class="stat-card" style="flex: 1; width: calc(50% - 5px); background-color: white; border-radius: 5px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); padding: 10px; text-align: center;">
                         <div class="stat-icon" style="font-size: 1.2rem; color: #000; margin-bottom: 5px;"><i class="fas fa-moon"></i></div>
                         <div class="stat-value" id="eveningSessionsCount" style="font-size: 1.4rem; font-weight: bold; color: #facc15; margin: 5px 0;">0</div>
                         <div class="stat-label" style="color: #666; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Evening Sessions</div>
@@ -74,13 +74,13 @@
                 
                 <!-- Second row: Incomplete & Complete Trainings -->
                 <div style="display: flex; gap: 10px;">
-                    <div class="stat-card" style="flex: 1; width: calc(50% - 5px); background-color: white; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 10px; text-align: center;">
+                    <div class="stat-card" style="flex: 1; width: calc(50% - 5px); background-color: white; border-radius: 5px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); padding: 10px; text-align: center;">
                         <div class="stat-icon" style="font-size: 1.2rem; color: #000; margin-bottom: 5px;"><i class="fas fa-times-circle"></i></div>
                         <div class="stat-value" id="incompleteTrainingsCount" style="font-size: 1.4rem; font-weight: bold; color: #facc15; margin: 5px 0;">0</div>
                         <div class="stat-label" style="color: #666; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Incomplete Trainings</div>
                     </div>
                     
-                    <div class="stat-card" style="flex: 1; width: calc(50% - 5px); background-color: white; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); padding: 10px; text-align: center;">
+                    <div class="stat-card" style="flex: 1; width: calc(50% - 5px); background-color: white; border-radius: 5px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); padding: 10px; text-align: center;">
                         <div class="stat-icon" style="font-size: 1.2rem; color: #000; margin-bottom: 5px;"><i class="fas fa-check-circle"></i></div>
                         <div class="stat-value" id="completedTrainingsCount" style="font-size: 1.4rem; font-weight: bold; color: #facc15; margin: 5px 0;">0</div>
                         <div class="stat-label" style="color: #666; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Completed Trainings</div>
