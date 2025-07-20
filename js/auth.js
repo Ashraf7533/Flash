@@ -77,8 +77,8 @@ function initializeDatabase() {
     if (!localStorage.getItem('memberDb')) {
         const defaultMembers = [
             {
-                username: 'FlashRC12',
-                password: 'Flash12',
+                username: 'FlashRC25',
+                password: 'Flash25',
                 email: 'admin@flashrunningclub.com',
                 phone: '555-000-0000',
                 fullName: 'Flash Running Club Admin',
