@@ -294,7 +294,7 @@ body {
 .sidebar-header {
     background: var(--primary-color); /* Yellow for header */
     color: black;
-    padding: 15px; /* Match the inline style padding */
+    padding: 1rem 0; /* Match page header padding */
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -306,13 +306,13 @@ body {
 .sidebar-logo {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px; /* Match page header logo gap */
     flex: 1;
 }
 
 .sidebar-logo img {
-    width: 30px;
-    height: 30px;
+    width: 40px; /* Match page header logo size */
+    height: 40px; /* Match page header logo size */
     border-radius: 50%;
     animation: logo-flash 2s infinite;
 }
@@ -345,6 +345,7 @@ body {
     text-decoration: none;
     transition: all 0.3s ease;
     border-left: 3px solid transparent;
+    font-size: 0.95rem; /* Standardized menu text size */
 }
 
 .sidebar-menu a:hover,
@@ -357,6 +358,7 @@ body {
 .sidebar-menu i {
     width: 16px;
     text-align: center;
+    font-size: 1rem; /* Standardized icon size */
 }
 
 /* Main Content */
@@ -378,9 +380,10 @@ body {
 }
 
 .content-header h2 {
-    font-size: 1.5rem; /* Standardized size */
+    font-size: 1.5rem; /* Standardized size matching sidebar logo text */
     color: var(--text-dark);
     margin-bottom: 0.5rem;
+    font-weight: bold; /* Match sidebar title weight */
 }
 
 .content-header p {
@@ -393,7 +396,7 @@ body {
     display: none;
     background: var(--primary-color);
     color: black;
-    padding: 15px; /* Match sidebar header padding */
+    padding: 1rem 0; /* Match page header padding */
     align-items: center;
     justify-content: space-between;
     position: fixed;
@@ -542,23 +545,35 @@ body {
     border: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start; /* Align to top for better text flow */
+}
+
+.training-info {
+    flex: 1;
+    min-width: 0; /* Prevent overflow */
 }
 
 .training-info h4 {
     margin: 0 0 0.25rem 0;
     color: var(--text-dark);
+    white-space: nowrap; /* Keep training titles on one line */
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .training-info p {
     margin: 0;
     color: var(--text-light);
     font-size: 0.875rem;
+    white-space: nowrap; /* Keep descriptions on one line */
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .training-status {
     display: flex;
     gap: 0.5rem;
+    flex-shrink: 0; /* Prevent status badges from shrinking */
 }
 
 .status-badge {
@@ -1189,28 +1204,19 @@ body {
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 
-/* Version display fix */
-.version-info {
+/* Sidebar Footer with Version Info */
+.sidebar-footer {
     padding: 1rem;
     text-align: center;
     color: var(--text-light);
-    font-size: 0.875rem;
-    border-top: 1px solid var(--border-color);
-    margin-top: 2rem;
-    background: rgba(255,255,255,0.5);
-    width: 100%;
-    box-sizing: border-box;
-    position: relative;
+    font-size: 0.75rem;
+    border-top: 1px solid #333;
+    margin-top: auto;
+    background: rgba(0,0,0,0.2);
+    position: absolute;
     bottom: 0;
-}
-
-@media (max-width: 768px) {
-    .version-info {
-        margin-bottom: 2rem; /* Add bottom spacing for mobile */
-        padding-bottom: 2rem;
-        margin-left: 0;
-        margin-right: 0;
-    }
+    left: 0;
+    right: 0;
 }
 
 /* Print Styles */
