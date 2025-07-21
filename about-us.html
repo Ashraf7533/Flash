@@ -15,7 +15,7 @@
         .about-section h3 {
             color: #000;
             margin-bottom: 15px;
-            font-size: 1.5rem;
+            font-size: 1.125rem; /* Reduced font size */
         }
         
         .about-content {
@@ -74,7 +74,6 @@
         .contact-icon {
             width: 32px;
             height: 32px;
-            background-color: #facc15;
             color: #000;
             border-radius: 8px;
             display: flex;
@@ -126,6 +125,9 @@
                     <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                 </ul>
             </div>
+            <div class="sidebar-footer">
+                <div style="font-size: 0.7rem; opacity: 0.7;">v2.0.1</div>
+            </div>
         </div>
 
         <!-- Main Content -->
@@ -158,8 +160,8 @@
                 <div class="card-body">
                     <div class="about-section">
                         <div class="about-content">
-                            <div id="missionDisplay" class="mission-box" style="background-color: #f9f9f9; border-left: 4px solid #facc15; padding: 25px; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
-                                <p id="missionText" style="font-size: 1.25rem; font-style: italic; text-align: justify; line-height: 1.7;">"Flash running club was established to redefine the meaning of sport. To elevate running to new heights, both nationally and internationally. Our mission is to nurture successful, high-performing athletes, create a lasting legacy, and inspire future generations. We believe that running is not just a physical activity but a lifestyle that fosters discipline, perseverance, and mental well-being. We are here to make history and set the standard for excellence in running."</p>
+                            <div id="missionDisplay" class="mission-box" style="background-color: #f9f9f9; border-left: 4px solid #facc15; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                                <p id="missionText" style="font-size: 0.95rem; font-style: italic; text-align: justify; line-height: 1.6;">"Flash running club was established to redefine the meaning of sport. To elevate running to new heights, both nationally and internationally. Our mission is to nurture successful, high-performing athletes, create a lasting legacy, and inspire future generations. We believe that running is not just a physical activity but a lifestyle that fosters discipline, perseverance, and mental well-being. We are here to make history and set the standard for excellence in running."</p>
                             </div>
                             <div id="missionEditor" style="display: none; margin-top: 15px;">
                                 <textarea id="missionTextarea" style="width: 100%; min-height: 200px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; font-family: Arial, sans-serif; margin-bottom: 15px;"></textarea>
@@ -194,7 +196,7 @@
                                 <div class="team-info">
                                     <div class="team-name">Sarah Johnson</div>
                                     <div class="team-role">Club President</div>
-                                    <p>Marathon runner with 15 years of experience and a passion for coaching new runners.</p>
+                                    <p style="font-size: 0.875rem; line-height: 1.5;">Marathon runner with 15 years of experience and a passion for coaching new runners.</p>
                                 </div>
                             </div>
                             <div class="team-member" data-member="1">
@@ -202,7 +204,7 @@
                                 <div class="team-info">
                                     <div class="team-name">Michael Chen</div>
                                     <div class="team-role">Head Coach</div>
-                                    <p>Certified athletic trainer specializing in running techniques and injury prevention.</p>
+                                    <p style="font-size: 0.875rem; line-height: 1.5;">Certified athletic trainer specializing in running techniques and injury prevention.</p>
                                 </div>
                             </div>
                             <div class="team-member" data-member="2">
@@ -210,7 +212,7 @@
                                 <div class="team-info">
                                     <div class="team-name">Lisa Rodriguez</div>
                                     <div class="team-role">Events Coordinator</div>
-                                    <p>Organized over 50 successful running events and specializes in community outreach.</p>
+                                    <p style="font-size: 0.875rem; line-height: 1.5;">Organized over 50 successful running events and specializes in community outreach.</p>
                                 </div>
                             </div>
                         </div>
@@ -243,7 +245,7 @@
                         <div class="about-content">
                             <!-- Contact Display View -->
                             <div id="contactDisplay" class="contact-info">
-                                <div class="contact-method" style="cursor: pointer; margin-bottom: 20px; padding: 10px; border-radius: 10px; border: 2px solid #facc15;" onclick="copyEmail()">
+                                <div class="contact-method" style="cursor: pointer; margin-bottom: 20px; padding: 10px; border-radius: 10px;" onclick="copyEmail()">
                                     <div class="contact-icon" style="width: 28px; height: 28px; font-size: 0.9rem;">
                                         <i class="fas fa-envelope"></i>
                                     </div>
@@ -253,7 +255,7 @@
                                     </div>
                                 </div>
                                 
-                                <div class="contact-method" style="cursor: pointer; margin-bottom: 20px; padding: 10px; border-radius: 10px; border: 2px solid #facc15;">
+                                <div class="contact-method" style="cursor: pointer; margin-bottom: 20px; padding: 10px; border-radius: 10px;">
                                     <a id="phoneLink" href="tel:+9607636131" style="color: inherit; text-decoration: none; display: flex; align-items: center; width: 100%;">
                                         <div class="contact-icon" style="width: 28px; height: 28px; font-size: 0.9rem;">
                                             <i class="fas fa-phone"></i>
@@ -265,7 +267,7 @@
                                     </a>
                                 </div>
                                 
-                                <div class="contact-method" style="padding: 10px; border-radius: 10px; border: 2px solid #facc15;">
+                                <div class="contact-method" style="padding: 10px; border-radius: 10px;">
                                     <div class="contact-icon" style="width: 28px; height: 28px; font-size: 0.9rem;">
                                         <i class="fas fa-map-marker-alt"></i>
                                     </div>
