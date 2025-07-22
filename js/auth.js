@@ -217,11 +217,11 @@ function validateLogin(username, password, userType) {
     const members = getAllMembers();
     
     if (userType === 'admin') {
-        // For the admin account, use hardcoded GitHub credentials
-        if (username === 'admin' && password === 'github') {
-            localStorage.setItem('username', 'FlashRC12'); // Still use original admin account internally
+        // For the admin account, use updated credentials
+        if (username === 'FlashRC25' && password === 'Flash25') {
+            localStorage.setItem('username', 'FlashRC25'); 
             localStorage.setItem('userType', 'admin');
-            addActiveSession('FlashRC12', 'admin');
+            addActiveSession('FlashRC25', 'admin');
             return { success: true, message: 'Admin login successful' };
         }
     } else {
