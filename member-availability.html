@@ -547,8 +547,8 @@
             // Refresh the display to show saved values
             displayWeek(weekStart);
             
-            // Show success message
-            alert('Your training availability has been saved!');
+            // Show floating notification message instead of alert
+            showAlert('Availability updated', 'success');
         }
         
         // Helper function to convert week number back to date

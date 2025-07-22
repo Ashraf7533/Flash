@@ -11,10 +11,12 @@
     <div class="dashboard">
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
-            <div class="sidebar-header" style="display: flex; align-items: center; padding: 15px;">
-                <div id="sidebarAvatar" style="width: 50px; height: 50px; border-radius: 50%; background-color: #333; display: flex; align-items: center; justify-content: center; margin-right: 10px; font-size: 1.5rem; overflow: hidden; border: 2px solid #facc15; flex-shrink: 0; z-index: 1600;"></div>
-                <div id="sidebarMemberName" style="color: #000; font-weight: bold; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; z-index: 1600;"></div>
-                <button class="sidebar-toggle" id="sidebarToggle" style="background: none; border: none; color: #fff; cursor: pointer; flex-shrink: 0;">
+            <div class="sidebar-header" style="background-color: #facc15; display: flex; align-items: center; padding: 1rem 0;">
+                <div class="sidebar-logo" style="display: flex; align-items: center; flex: 1; margin-left: 1rem;">
+                    <div id="sidebarAvatar" style="width: 40px; height: 40px; border-radius: 50%; background-color: #333; display: flex; align-items: center; justify-content: center; margin-right: 10px; font-size: 1.5rem; overflow: hidden; border: 2px solid #000; flex-shrink: 0; z-index: 1600;"></div>
+                    <div id="sidebarMemberName" style="color: #000; font-weight: bold; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; z-index: 1600;"></div>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle" style="background: none; border: none; color: #000; cursor: pointer; flex-shrink: 0; margin-right: 1rem;">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -77,13 +79,13 @@
                     <div class="stat-card" style="flex: 1; width: calc(50% - 5px); background-color: white; border-radius: 5px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); padding: 10px; text-align: center;">
                         <div class="stat-icon" style="font-size: 1.2rem; color: #000; margin-bottom: 5px;"><i class="fas fa-times-circle"></i></div>
                         <div class="stat-value" id="incompleteTrainingsCount" style="font-size: 1.4rem; font-weight: bold; color: #facc15; margin: 5px 0;">0</div>
-                        <div class="stat-label" style="color: #666; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Incomplete Trainings</div>
+                        <div class="stat-label" style="color: #666; font-size: 0.75rem; white-space: normal; overflow: visible; line-height: 1.2;">Incomplete Trainings</div>
                     </div>
                     
                     <div class="stat-card" style="flex: 1; width: calc(50% - 5px); background-color: white; border-radius: 5px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); padding: 10px; text-align: center;">
                         <div class="stat-icon" style="font-size: 1.2rem; color: #000; margin-bottom: 5px;"><i class="fas fa-check-circle"></i></div>
                         <div class="stat-value" id="completedTrainingsCount" style="font-size: 1.4rem; font-weight: bold; color: #facc15; margin: 5px 0;">0</div>
-                        <div class="stat-label" style="color: #666; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Completed Trainings</div>
+                        <div class="stat-label" style="color: #666; font-size: 0.75rem; white-space: normal; overflow: visible; line-height: 1.2;">Completed Trainings</div>
                     </div>
                 </div>
             </div>
@@ -309,15 +311,17 @@
                 <div style="font-size: 1rem; font-weight: bold; color: #facc15; margin: 5px 0;">${time}</div>
             `;
             
-            // Add click event to ask before generating and downloading image
+            // Add click event to use custom confirm dialog for downloading image
             box.addEventListener('click', function() {
                 if (time !== 'Not set') {
-                    const confirmDownload = confirm(`Do you want to download your ${distance} time achievement?`);
-                    if (confirmDownload) {
-                        generateRunningTimeImage(distance, time);
-                    }
+                    // Use custom confirmation dialog
+                    showConfirm(`Do you want download your ${distance} time achievement?`, function(confirmed) {
+                        if (confirmed) {
+                            generateRunningTimeImage(distance, time);
+                        }
+                    });
                 } else {
-                    alert('No time recorded for this distance yet.');
+                    showAlert('No time recorded for this distance yet.', 'error');
                 }
             });
             
